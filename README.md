@@ -76,7 +76,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 4 — Diagnoses, Prescriptions & Pharmacy**
   `diagnoses`, `prescriptions` + `prescription_items`. Pharmacy: `medicines`, `medicine_categories`, `medicine_batches` (expiry/stock), `pharmacy_sales` + items, `pharmacy_purchases` + items, `pharmacy_returns`. Dispensing flow deducts batch stock inside a transaction; stock never goes negative unless a hospital-policy flag allows it; low-stock alerts.
 
-- [ ] **Phase 5 — Laboratory & Radiology**
+- [x] **Phase 5 — Laboratory & Radiology**
   `lab_tests`, `lab_orders` + items, `lab_results` (reference ranges, values, approval workflow: order → collect → process → result → approve → report). `radiology_tests`, `radiology_orders`, `radiology_reports` (X-Ray/CT/MRI/Ultrasound/other).
 
 - [ ] **Phase 6 — IPD, Beds, Nursing, Emergency, OT**

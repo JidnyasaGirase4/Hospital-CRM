@@ -15,3 +15,5 @@ require base_path('routes/v1/users.php');
 require base_path('routes/v1/patients.php');
 require base_path('routes/v1/clinical.php');
 require base_path('routes/v1/pharmacy.php');
+require base_path('routes/v1/laboratory.php');
+require base_path('routes/v1/radiology.php');
