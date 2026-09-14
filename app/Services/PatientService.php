@@ -18,6 +18,7 @@ class PatientService
         return DB::transaction(function () use ($data) {
             $data['mrn'] = $this->sequences->next(self::MRN_SEQUENCE_KEY, self::MRN_PREFIX);
             $data['registered_by'] = $data['registered_by'] ?? request()->user()?->id;
+            $data['is_active'] = $data['is_active'] ?? true;
 
             return Patient::create($data);
         });

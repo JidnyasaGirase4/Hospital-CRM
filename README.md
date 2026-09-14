@@ -70,7 +70,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 2 — Patients & Patient 360°**
   `patients` table with auto-generated MRN. Full CRUD. `GET /patients/{id}/360` aggregating profile, history, appointments, visits, consultations, diagnoses, prescriptions, lab/radiology orders & reports, admissions, bills, payments, insurance, documents — eager-loaded, no N+1.
 
-- [ ] **Phase 3 — Appointments, OPD, Consultations**
+- [x] **Phase 3 — Appointments, OPD, Consultations**
   `appointments` (doctor/department/patient/date/time/type/status, check-in, reschedule, cancel), `opd_visits` (vitals, symptoms, diagnosis, notes, follow-up), `consultations` (chief complaint, examination, investigation orders) linking to diagnoses and prescriptions.
 
 - [ ] **Phase 4 — Diagnoses, Prescriptions & Pharmacy**

@@ -14,6 +14,7 @@ class UserService
             $user = User::create([
                 ...$data,
                 'password' => Hash::make($data['password']),
+                'is_active' => $data['is_active'] ?? true,
             ]);
 
             if (! empty($data['role_ids'])) {

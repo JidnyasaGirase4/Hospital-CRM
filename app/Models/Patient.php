@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -53,6 +54,21 @@ class Patient extends Model
     public function registeredBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'registered_by');
+    }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class)->latest('scheduled_at');
+    }
+
+    public function opdVisits(): HasMany
+    {
+        return $this->hasMany(OpdVisit::class)->latest('visit_date');
+    }
+
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class)->latest();
     }
 
     public function fullName(): string
