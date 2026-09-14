@@ -90,6 +90,8 @@ class RolePermissionSeeder extends Seeder
             'pharmacy' => 'all',
             'prescriptions' => ['view'],
             'inventory' => ['view'],
+            'suppliers' => ['view'],
+            'patients' => ['view'],
         ],
         Role::LAB_TECHNICIAN => [
             'laboratory' => 'all',

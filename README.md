@@ -73,7 +73,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 3 — Appointments, OPD, Consultations**
   `appointments` (doctor/department/patient/date/time/type/status, check-in, reschedule, cancel), `opd_visits` (vitals, symptoms, diagnosis, notes, follow-up), `consultations` (chief complaint, examination, investigation orders) linking to diagnoses and prescriptions.
 
-- [ ] **Phase 4 — Diagnoses, Prescriptions & Pharmacy**
+- [x] **Phase 4 — Diagnoses, Prescriptions & Pharmacy**
   `diagnoses`, `prescriptions` + `prescription_items`. Pharmacy: `medicines`, `medicine_categories`, `medicine_batches` (expiry/stock), `pharmacy_sales` + items, `pharmacy_purchases` + items, `pharmacy_returns`. Dispensing flow deducts batch stock inside a transaction; stock never goes negative unless a hospital-policy flag allows it; low-stock alerts.
 
 - [ ] **Phase 5 — Laboratory & Radiology**

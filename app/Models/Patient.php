@@ -71,6 +71,21 @@ class Patient extends Model
         return $this->hasMany(Consultation::class)->latest();
     }
 
+    public function diagnoses(): HasMany
+    {
+        return $this->hasMany(Diagnosis::class)->latest('diagnosed_at');
+    }
+
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class)->latest();
+    }
+
+    public function pharmacySales(): HasMany
+    {
+        return $this->hasMany(PharmacySale::class)->latest();
+    }
+
     public function fullName(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

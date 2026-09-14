@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Pharmacy\StorePharmacyReturnRequest;
+use App\Http\Requests\Pharmacy\StorePharmacySaleRequest;
+use App\Http\Resources\PharmacySaleResource;
+use App\Models\PharmacySale;
+use App\Models\PharmacySaleItem;
+use App\Services\PharmacyService;
+use Illuminate\Http\Request;
+
+class PharmacySaleController extends Controller
+{
+    public function __construct(private readonly PharmacyService $pharmacyService) {}
+
+    public function index(Request $request)
+    {
+        $this->authorize('viewAny', PharmacySale::class);
+
+        $sales = PharmacySale::query()
+            ->with('patient')
+            ->when($request->filled('patient_id'), fn ($q) => $q->where('patient_id', $request->integer('patient_id')))
+            ->when($request->filled('prescription_id'), fn ($q) => $q->where('prescription_id', $request->integer('prescription_id')))
+            ->latest()
+            ->paginate($request->integer('per_page', 15));
+
+        return $this->paginated($sales, PharmacySaleResource::class, 'Pharmacy sales retrieved successfully');
+    }
+
+    public function store(StorePharmacySaleRequest $request)
+    {
+        $sale = $this->pharmacyService->createSale($request->validated());
+
+        return $this->success(new PharmacySaleResource($sale), 'Sale completed and stock updated successfully', 201);
+    }
+
+    public function show(PharmacySale $sale)
+    {
+        $this->authorize('view', $sale);
+
+        return $this->success(new PharmacySaleResource($sale->load(['patient', 'items.batch.medicine'])));
+    }
+
+    public function storeReturn(StorePharmacyReturnRequest $request, PharmacySale $sale)
+    {
+        $saleItem = PharmacySaleItem::where('pharmacy_sale_id', $sale->id)
+            ->findOrFail($request->validated('pharmacy_sale_item_id'));
+
+        $return = $this->pharmacyService->returnItem(
+            $saleItem,
+            $request->validated('quantity'),
+            $request->validated('reason')
+        );
+
+        return $this->success($return, 'Return processed and stock restored successfully', 201);
+    }
+}

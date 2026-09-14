@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Http\Resources\DiagnosisResource;
+use App\Http\Resources\PrescriptionResource;
 use App\Models\Patient;
 use Illuminate\Support\Str;
 
@@ -27,6 +29,7 @@ class Patient360Service
         'consultations',
         'diagnoses',
         'prescriptions',
+        'pharmacySales',
         'labOrders',
         'radiologyOrders',
         'admissions',
@@ -42,7 +45,8 @@ class Patient360Service
      * returned for that section so nothing breaks in the meantime.
      */
     private const RESOURCE_MAP = [
-        //
+        'diagnoses' => DiagnosisResource::class,
+        'prescriptions' => PrescriptionResource::class,
     ];
 
     public function build(Patient $patient): array
