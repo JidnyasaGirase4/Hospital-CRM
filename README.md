@@ -67,7 +67,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 1 — Auth, Users, Roles & Permissions**
   `users`, `roles`, `permissions`, `role_user`, `permission_role` tables. Login/logout/me/forgot-password/reset-password. Sanctum tokens. `Role`/`Permission` models + `HasRoles`/`HasPermissions` traits. `CheckPermission` middleware. Base `Policy` pattern. Seeder for the 12 hospital roles. Audit log foundation (`audit_logs` table, `AuditLogService`, `Auditable` trait).
 
-- [ ] **Phase 2 — Patients & Patient 360°**
+- [x] **Phase 2 — Patients & Patient 360°**
   `patients` table with auto-generated MRN. Full CRUD. `GET /patients/{id}/360` aggregating profile, history, appointments, visits, consultations, diagnoses, prescriptions, lab/radiology orders & reports, admissions, bills, payments, insurance, documents — eager-loaded, no N+1.
 
 - [ ] **Phase 3 — Appointments, OPD, Consultations**
