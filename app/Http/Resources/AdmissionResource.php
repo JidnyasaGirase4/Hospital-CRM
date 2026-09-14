@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RadiologyOrderResource extends JsonResource
+class AdmissionResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -20,15 +20,15 @@ class RadiologyOrderResource extends JsonResource
                 'id' => $this->doctor->id,
                 'name' => $this->doctor->name,
             ]),
-            'test' => $this->whenLoaded('test', fn () => [
-                'id' => $this->test->id,
-                'name' => $this->test->name,
-                'modality' => $this->test->modality,
-            ]),
+            'admission_date' => $this->admission_date,
+            'discharge_date' => $this->discharge_date,
+            'admission_type' => $this->admission_type,
+            'reason' => $this->reason,
+            'discharge_summary' => $this->discharge_summary,
             'status' => $this->status,
-            'ordered_at' => $this->ordered_at,
-            'notes' => $this->notes,
-            'report' => $this->whenLoaded('report', fn () => $this->report ? new RadiologyReportResource($this->report) : null),
+            'current_bed' => $this->whenLoaded('currentBedAllocation', fn () => $this->currentBedAllocation
+                ? new BedAllocationResource($this->currentBedAllocation)
+                : null),
         ];
     }
 }

@@ -70,7 +70,7 @@ class RolePermissionSeeder extends Seeder
             'nursing' => 'all',
             'ipd' => ['view'],
             'beds' => ['view'],
-            'emergency' => ['view', 'update'],
+            'emergency' => ['view', 'create', 'update'],
             'documents' => ['view'],
         ],
         Role::RECEPTIONIST => [

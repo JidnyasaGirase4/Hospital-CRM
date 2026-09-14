@@ -96,6 +96,11 @@ class Patient extends Model
         return $this->hasMany(RadiologyOrder::class)->latest('ordered_at');
     }
 
+    public function admissions(): HasMany
+    {
+        return $this->hasMany(Admission::class)->latest('admission_date');
+    }
+
     public function fullName(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

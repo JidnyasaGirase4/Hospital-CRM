@@ -17,3 +17,7 @@ require base_path('routes/v1/clinical.php');
 require base_path('routes/v1/pharmacy.php');
 require base_path('routes/v1/laboratory.php');
 require base_path('routes/v1/radiology.php');
+require base_path('routes/v1/ipd.php');
+require base_path('routes/v1/nursing.php');
+require base_path('routes/v1/emergency.php');
+require base_path('routes/v1/ot.php');
