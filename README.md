@@ -85,7 +85,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 7 — Billing, Payments, Refunds, Insurance/TPA**
   `bills` + `bill_items`, `payments`, `refunds`, `discounts` across OPD/IPD/Pharmacy/Lab/Radiology/OT/Other. Unique invoice numbers, decimal money throughout. IPD billing accumulates room/nursing/doctor/medicine/lab/radiology/procedure/OT/consumable charges and produces a final bill at discharge. Multi-method payments (cash/card/UPI/bank/cheque/insurance/TPA), partial/advance/refund/outstanding. `insurance_companies`, `insurance_policies`, `insurance_claims`, `insurance_documents` with pre-auth → claim → approved/rejected → settlement.
 
-- [ ] **Phase 8 — Inventory & Suppliers**
+- [x] **Phase 8 — Inventory & Suppliers**
   `inventory_items`, `inventory_transactions` (purchase/issue/return/adjustment/transfer), `suppliers`, `purchase_orders`.
 
 - [ ] **Phase 9 — Documents, Notifications, Reports, Audit Logs (hardening)**
