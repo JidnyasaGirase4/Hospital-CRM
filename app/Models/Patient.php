@@ -101,6 +101,21 @@ class Patient extends Model
         return $this->hasMany(Admission::class)->latest('admission_date');
     }
 
+    public function bills(): HasMany
+    {
+        return $this->hasMany(Bill::class)->latest();
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->latest('paid_at');
+    }
+
+    public function insurancePolicies(): HasMany
+    {
+        return $this->hasMany(InsurancePolicy::class);
+    }
+
     public function fullName(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

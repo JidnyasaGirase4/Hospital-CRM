@@ -21,3 +21,5 @@ require base_path('routes/v1/ipd.php');
 require base_path('routes/v1/nursing.php');
 require base_path('routes/v1/emergency.php');
 require base_path('routes/v1/ot.php');
+require base_path('routes/v1/billing.php');
+require base_path('routes/v1/insurance.php');

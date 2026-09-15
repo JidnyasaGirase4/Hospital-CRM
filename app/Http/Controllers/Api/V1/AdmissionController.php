@@ -7,13 +7,18 @@ use App\Http\Requests\Admissions\AllocateBedRequest;
 use App\Http\Requests\Admissions\DischargeAdmissionRequest;
 use App\Http\Requests\Admissions\StoreAdmissionRequest;
 use App\Http\Resources\AdmissionResource;
+use App\Http\Resources\BillResource;
 use App\Models\Admission;
 use App\Services\AdmissionService;
+use App\Services\IpdBillingService;
 use Illuminate\Http\Request;
 
 class AdmissionController extends Controller
 {
-    public function __construct(private readonly AdmissionService $admissionService) {}
+    public function __construct(
+        private readonly AdmissionService $admissionService,
+        private readonly IpdBillingService $ipdBillingService
+    ) {}
 
     public function index(Request $request)
     {
@@ -55,5 +60,14 @@ class AdmissionController extends Controller
         $admission = $this->admissionService->transferBed($admission, $request->validated('bed_id'));
 
         return $this->success(new AdmissionResource($admission->load('currentBedAllocation.bed')), 'Bed transferred successfully');
+    }
+
+    public function generateFinalBill(Admission $admission)
+    {
+        $this->authorize('view', $admission);
+
+        $bill = $this->ipdBillingService->generateFinalBill($admission);
+
+        return $this->success(new BillResource($bill->load(['patient', 'items'])), 'Final IPD bill generated successfully', 201);
     }
 }

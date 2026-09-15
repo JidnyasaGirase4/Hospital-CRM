@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Consultation;
+use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
@@ -11,10 +13,8 @@ use Tests\TestCase;
 
 /**
  * The golden-path OPD flow named in the README's Phase 10 test plan:
- * appointment -> check-in -> consultation -> (prescription -> billing ->
- * payment land in later phases). Exercised end-to-end here as each of
- * those pieces becomes available, rather than only unit-testing modules
- * in isolation.
+ * appointment -> check-in -> consultation -> prescription -> billing ->
+ * payment.
  */
 class OpdWorkflowTest extends TestCase
 {
@@ -77,12 +77,46 @@ class OpdWorkflowTest extends TestCase
         // 5. Appointment is auto-completed as a side effect.
         $this->assertDatabaseHas('appointments', ['id' => $appointmentId, 'status' => 'completed']);
 
-        // 6. Patient 360 now surfaces the appointment, OPD visit and consultation.
+        // 6. Doctor writes a prescription.
+        $medicine = Medicine::factory()->create();
+        $this->postJson('/api/v1/prescriptions', [
+            'patient_id' => $patient->id,
+            'doctor_id' => $doctor->id,
+            'consultation_id' => $consultationId,
+            'items' => [['medicine_id' => $medicine->id, 'quantity' => 5, 'dosage' => '500mg']],
+        ])->assertCreated();
+
+        // 7. Receptionist raises the OPD consultation bill and collects payment.
+        $this->actingAs($receptionist, 'sanctum');
+        $billResponse = $this->postJson('/api/v1/bills', [
+            'patient_id' => $patient->id,
+            'type' => 'opd',
+            'source_type' => Consultation::class,
+            'source_id' => $consultationId,
+            'items' => [['category' => 'consultation', 'description' => 'OPD consultation fee', 'quantity' => 1, 'unit_price' => 500]],
+        ])->assertCreated();
+
+        $billId = $billResponse->json('data.id');
+
+        $this->postJson('/api/v1/payments', [
+            'bill_id' => $billId,
+            'patient_id' => $patient->id,
+            'amount' => 500,
+            'method' => 'cash',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('bills', ['id' => $billId, 'status' => 'paid', 'paid_amount' => 500]);
+
+        // 8. Patient 360 now surfaces every step of the flow, including billing.
+        $this->actingAs($doctor, 'sanctum');
         $response = $this->getJson("/api/v1/patients/{$patient->id}/360")->assertOk();
 
         $response->assertJsonCount(1, 'data.appointments')
             ->assertJsonCount(1, 'data.opd_visits')
             ->assertJsonCount(1, 'data.consultations')
-            ->assertJsonPath('data.consultations.0.diagnosis', 'Pharyngitis');
+            ->assertJsonCount(1, 'data.prescriptions')
+            ->assertJsonCount(1, 'data.bills')
+            ->assertJsonPath('data.consultations.0.diagnosis', 'Pharyngitis')
+            ->assertJsonPath('data.bills.0.status', 'paid');
     }
 }

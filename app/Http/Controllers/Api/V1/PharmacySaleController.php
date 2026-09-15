@@ -5,15 +5,21 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pharmacy\StorePharmacyReturnRequest;
 use App\Http\Requests\Pharmacy\StorePharmacySaleRequest;
+use App\Http\Resources\BillResource;
 use App\Http\Resources\PharmacySaleResource;
+use App\Models\Bill;
 use App\Models\PharmacySale;
 use App\Models\PharmacySaleItem;
+use App\Services\BillingService;
 use App\Services\PharmacyService;
 use Illuminate\Http\Request;
 
 class PharmacySaleController extends Controller
 {
-    public function __construct(private readonly PharmacyService $pharmacyService) {}
+    public function __construct(
+        private readonly PharmacyService $pharmacyService,
+        private readonly BillingService $billingService
+    ) {}
 
     public function index(Request $request)
     {
@@ -55,5 +61,15 @@ class PharmacySaleController extends Controller
         );
 
         return $this->success($return, 'Return processed and stock restored successfully', 201);
+    }
+
+    public function generateBill(PharmacySale $sale)
+    {
+        $this->authorize('view', $sale);
+        $this->authorize('create', Bill::class);
+
+        $bill = $this->billingService->createFromPharmacySale($sale);
+
+        return $this->success(new BillResource($bill->load(['patient', 'items'])), 'Pharmacy bill generated successfully', 201);
     }
 }

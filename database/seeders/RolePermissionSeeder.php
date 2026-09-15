@@ -78,12 +78,13 @@ class RolePermissionSeeder extends Seeder
             'appointments' => 'all',
             'opd' => ['view', 'create'],
             'billing' => ['view', 'create'],
+            'payments' => ['view', 'create'],
             'documents' => ['view', 'create'],
         ],
         Role::BILLING_STAFF => [
             'billing' => 'all',
             'payments' => 'all',
-            'insurance' => ['view', 'create', 'update'],
+            'insurance' => ['view', 'create', 'update', 'approve-claim'],
             'patients' => ['view'],
         ],
         Role::PHARMACIST => [

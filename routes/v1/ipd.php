@@ -19,5 +19,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::patch('admissions/{admission}/discharge', [AdmissionController::class, 'discharge'])->name('admissions.discharge');
     Route::patch('admissions/{admission}/transfer-bed', [AdmissionController::class, 'transferBed'])->name('admissions.transfer-bed');
+    Route::post('admissions/{admission}/final-bill', [AdmissionController::class, 'generateFinalBill'])->name('admissions.final-bill');
     Route::apiResource('admissions', AdmissionController::class)->only(['index', 'store', 'show']);
 });

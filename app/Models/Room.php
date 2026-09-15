@@ -15,7 +15,15 @@ class Room extends Model
         'ward_id',
         'room_number',
         'room_type',
+        'daily_rate',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'daily_rate' => 'decimal:2',
+        ];
+    }
 
     public function ward(): BelongsTo
     {

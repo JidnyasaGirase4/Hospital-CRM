@@ -82,7 +82,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 6 — IPD, Beds, Nursing, Emergency, OT**
   `wards`, `rooms`, `beds` (available/reserved/occupied/cleaning/maintenance), `admissions`, `bed_allocations` — a bed can never hold two concurrent active patients (DB-level + transactional guard). Nursing: `nursing_notes`, `patient_vitals`, `medication_administrations`, intake/output, shift handover. Emergency workflow (registration → triage → vitals → doctor → investigation → treatment → admit/discharge/refer). OT/Surgery scheduling and records.
 
-- [ ] **Phase 7 — Billing, Payments, Refunds, Insurance/TPA**
+- [x] **Phase 7 — Billing, Payments, Refunds, Insurance/TPA**
   `bills` + `bill_items`, `payments`, `refunds`, `discounts` across OPD/IPD/Pharmacy/Lab/Radiology/OT/Other. Unique invoice numbers, decimal money throughout. IPD billing accumulates room/nursing/doctor/medicine/lab/radiology/procedure/OT/consumable charges and produces a final bill at discharge. Multi-method payments (cash/card/UPI/bank/cheque/insurance/TPA), partial/advance/refund/outstanding. `insurance_companies`, `insurance_policies`, `insurance_claims`, `insurance_documents` with pre-auth → claim → approved/rejected → settlement.
 
 - [ ] **Phase 8 — Inventory & Suppliers**

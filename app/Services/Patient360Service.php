@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Http\Resources\AdmissionResource;
+use App\Http\Resources\BillResource;
 use App\Http\Resources\DiagnosisResource;
+use App\Http\Resources\InsurancePolicyResource;
 use App\Http\Resources\LabOrderResource;
+use App\Http\Resources\PaymentResource;
 use App\Http\Resources\PrescriptionResource;
 use App\Http\Resources\RadiologyOrderResource;
 use App\Models\Patient;
@@ -53,6 +56,9 @@ class Patient360Service
         'labOrders' => LabOrderResource::class,
         'radiologyOrders' => RadiologyOrderResource::class,
         'admissions' => AdmissionResource::class,
+        'bills' => BillResource::class,
+        'payments' => PaymentResource::class,
+        'insurancePolicies' => InsurancePolicyResource::class,
     ];
 
     public function build(Patient $patient): array

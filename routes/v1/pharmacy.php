@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('pharmacy-purchases', PharmacyPurchaseController::class)->only(['index', 'store', 'show']);
 
     Route::post('pharmacy-sales/{sale}/returns', [PharmacySaleController::class, 'storeReturn'])->name('pharmacy-sales.returns.store');
+    Route::post('pharmacy-sales/{sale}/bill', [PharmacySaleController::class, 'generateBill'])->name('pharmacy-sales.bill.store');
     Route::apiResource('pharmacy-sales', PharmacySaleController::class)
         ->only(['index', 'store', 'show'])
         ->parameters(['pharmacy-sales' => 'sale']);
