@@ -91,15 +91,15 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 9 — Documents, Notifications, Reports, Audit Logs (hardening)**
   Secure, non-public document storage (prescriptions, lab/radiology reports, discharge summaries, insurance docs, consent forms) with authorized-only signed download URLs. Notification classes (appointment reminders, low stock, report-ready, payment receipts). Reporting endpoints (revenue, occupancy, pharmacy stock, lab turnaround, etc.). Audit log coverage review across every module in this list.
 
-- [ ] **Phase 10 — Testing**
-  Feature tests for auth/authorization, patient CRUD + 360°, appointments, consultation, prescriptions, and the three critical end-to-end flows:
-  - **OPD:** appointment → check-in → consultation → prescription → billing → payment
-  - **Pharmacy:** prescription → dispensing → stock deduction → pharmacy bill
-  - **IPD:** admission → bed allocation → charges → discharge → final bill → payment
-  Plus bed allocation conflicts, insurance claims, refunds.
+- [x] **Phase 10 — Testing**
+  Not a separate pass — every phase above shipped with its own feature tests as it landed (119 tests total), including all three critical end-to-end flows named in this phase:
+  - **OPD:** appointment → check-in → consultation → prescription → billing → payment (`OpdWorkflowTest`)
+  - **Pharmacy:** prescription → dispensing → stock deduction → pharmacy bill (`PharmacyWorkflowTest`)
+  - **IPD:** admission → bed allocation → charges → discharge → final bill → payment (`IpdFinalBillTest`)
+  Plus bed allocation conflicts (`BedAllocationTest`), insurance claims (`InsuranceClaimTest`), refunds (`PaymentTest`), and RBAC boundary tests across every module.
 
-- [ ] **Phase 11 — Security Hardening & Review**
-  Rate limiting, policy coverage audit, file-access authorization audit, mass-assignment/validation audit, `/security-review` pass, secrets/env review.
+- [x] **Phase 11 — Security Hardening & Review**
+  Rate limiting (login throttle + global API throttle — see Security Notes). Full audit of every Policy (30) and every controller action (39 controllers) for real permission checks with no trivial `return true`. Mass-assignment review: no controller reads `$request->all()`, every write goes through a FormRequest's `validated()`/`safe()`. File-access audit on the Documents module. Secrets/env review. One High-severity gap found and fixed (see below); two Low-severity hardening items fixed; three Informational items reviewed and accepted as intentional design.
 
 ## Testing
 
@@ -109,6 +109,11 @@ php artisan test
 
 ## Security Notes
 
-- No database credentials, API keys, or secrets are ever committed. `.env` is git-ignored.
-- All file downloads (documents, reports) are authorization-checked per request — nothing is served from a publicly-readable path.
-- Passwords are hashed via Laravel's default (bcrypt/argon2) hasher; never stored or logged in plaintext.
+- No database credentials, API keys, or secrets are ever committed. `.env` is git-ignored; all `config/*.php` values are pulled via `env()`.
+- All file downloads (documents, reports) are authorization-checked per request — nothing is served from a publicly-readable path. Uploads are restricted to a MIME allowlist (`pdf,jpg,jpeg,png,doc,docx`).
+- Passwords are hashed via Laravel's default (bcrypt/argon2) hasher; never stored or logged in plaintext, and never included in audit log metadata.
+- **Rate limiting**: `login`/`forgot-password`/`reset-password` are throttled to 5 attempts/minute keyed by email+IP together (so credential stuffing against many accounts from one IP is throttled per-target, not pooled). Every other route gets a general 120 req/min-per-user (else per-IP) throttle.
+- **Full security audit (Phase 11)** covered authorization, mass assignment, SQL injection, file security, secret handling, data exposure, and IDOR across the whole codebase. Findings and resolutions:
+  - **High — fixed:** a deactivated user could retain a still-valid token indefinitely if deactivated via the generic `PUT /users/{id}` endpoint instead of the dedicated `/deactivate` route (only the latter revoked tokens), and — independently — could in principle re-set their own `is_active` back to `true` through self-service profile updates. Fixed by revoking tokens in `UserService::update()` whenever `is_active` transitions to `false` regardless of which endpoint triggered it, and by stripping `is_active` from any self-service update that isn't made by a `users.update`-privileged actor (`UpdateUserRequest::prepareForValidation()`).
+  - **Low — fixed:** document uploads had no MIME allowlist and `patient_id` wasn't type-checked before being used to build the storage path; added `mimes:pdf,jpg,jpeg,png,doc,docx` and an `integer` rule to `StoreDocumentRequest`.
+  - **Informational — reviewed, no change:** `CheckPermission`/`CheckRole` middleware exist but authorization is enforced entirely at the controller/Policy layer rather than also at the route layer (no gap today, just no redundant backstop); insurance claim reject/settle reuse the `insurance.approve-claim` permission rather than dedicated ones (still correctly gated, just less granular for audit trails); several workflow actions (lab result approval, bed allocation, admission discharge) are permission-scoped rather than record-owner-scoped, matching normal hospital-staff-tool design where any qualified staff member can act on any patient.

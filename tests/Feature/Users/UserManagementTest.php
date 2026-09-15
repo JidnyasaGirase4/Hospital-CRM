@@ -83,6 +83,23 @@ class UserManagementTest extends TestCase
             ->assertJsonPath('data.name', 'New Name');
     }
 
+    public function test_self_service_update_cannot_reactivate_or_change_own_active_status(): void
+    {
+        $nurse = User::factory()->create(['is_active' => true]);
+        $nurse->assignRole(Role::NURSE);
+        $this->actingAs($nurse, 'sanctum');
+
+        // A user without users.update can't toggle their own is_active via
+        // the self-service update path - the field is silently dropped
+        // rather than applied, so a deactivated user can never restore
+        // their own access even if a stale token were still valid.
+        $this->putJson("/api/v1/users/{$nurse->id}", ['is_active' => false])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', true);
+
+        $this->assertDatabaseHas('users', ['id' => $nurse->id, 'is_active' => true]);
+    }
+
     public function test_user_cannot_view_another_users_profile_without_permission(): void
     {
         $nurse = User::factory()->create();
@@ -108,6 +125,23 @@ class UserManagementTest extends TestCase
         // See AuthTest::test_user_can_logout_and_token_is_revoked() for why
         // this is asserted against the database rather than a second
         // authenticated request within the same test.
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_id' => $target->id,
+            'tokenable_type' => User::class,
+        ]);
+    }
+
+    public function test_deactivating_via_the_generic_update_endpoint_also_revokes_tokens(): void
+    {
+        $this->actingAsAdmin();
+
+        $target = User::factory()->create();
+        $target->createToken('test');
+
+        $this->putJson("/api/v1/users/{$target->id}", ['is_active' => false])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', false);
+
         $this->assertDatabaseMissing('personal_access_tokens', [
             'tokenable_id' => $target->id,
             'tokenable_type' => User::class,

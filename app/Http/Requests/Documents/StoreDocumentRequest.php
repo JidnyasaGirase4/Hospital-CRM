@@ -15,10 +15,10 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'patient_id' => ['required', 'exists:patients,id'],
+            'patient_id' => ['required', 'integer', 'exists:patients,id'],
             'title' => ['required', 'string', 'max:255'],
             'category' => ['nullable', 'in:prescription,lab-report,radiology-report,discharge-summary,insurance,consent,other'],
-            'file' => ['required', 'file', 'max:10240'],
+            'file' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,doc,docx'],
         ];
     }
 }

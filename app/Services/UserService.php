@@ -40,6 +40,7 @@ class UserService
             unset($data['password']);
         }
 
+        $wasActive = $user->is_active;
         $user->update($data);
 
         // Never log the hashed password itself - only that it changed.
@@ -47,6 +48,13 @@ class UserService
             'changed_fields' => array_keys(array_diff_key($data, array_flip(['password']))),
             'password_changed' => $passwordChanged,
         ]);
+
+        // Deactivation must always revoke tokens, whether it comes through
+        // this generic update endpoint or the dedicated setActive() one -
+        // otherwise a deactivated user's existing token keeps working.
+        if ($wasActive && ! $user->is_active) {
+            $user->tokens()->delete();
+        }
 
         return $user->fresh(['roles', 'department']);
     }
