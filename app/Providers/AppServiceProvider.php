@@ -14,7 +14,9 @@ use App\Models\Prescription;
 use App\Models\RadiologyOrder;
 use App\Models\Refund;
 use App\Models\Role;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -60,5 +62,20 @@ class AppServiceProvider extends ServiceProvider
             'insurance_claim' => InsuranceClaim::class,
             'role' => Role::class,
         ]);
+
+        // Keyed by IP + the submitted email/identifier (not just IP) so a
+        // credential-stuffing attempt against many accounts from one IP is
+        // throttled per-target, not pooled into one shared allowance.
+        RateLimiter::for('login', function ($request) {
+            $key = strtolower((string) $request->input('email')).'|'.$request->ip();
+
+            return Limit::perMinute(5)->by($key);
+        });
+
+        // General API throttle applied to every route via
+        // $middleware->throttleApi() in bootstrap/app.php.
+        RateLimiter::for('api', function ($request) {
+            return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

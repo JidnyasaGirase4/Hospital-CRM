@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ForceJsonResponse::class,
         ]);
 
+        // General throttle for every API route (limiter defined in
+        // AppServiceProvider); auth.php additionally applies the stricter
+        // 'login' limiter to the login/forgot-password/reset-password routes.
+        $middleware->throttleApi();
+
         $middleware->alias([
             'permission' => CheckPermission::class,
             'role' => CheckRole::class,

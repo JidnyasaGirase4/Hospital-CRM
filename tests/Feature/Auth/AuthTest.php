@@ -50,6 +50,23 @@ class AuthTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
+    public function test_repeated_failed_logins_are_rate_limited(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('secret123')]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson('/api/v1/auth/login', [
+                'email' => $user->email,
+                'password' => 'wrong-password',
+            ])->assertStatus(422);
+        }
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret123',
+        ])->assertStatus(429);
+    }
+
     public function test_deactivated_user_cannot_login(): void
     {
         $user = User::factory()->create(['password' => Hash::make('secret123'), 'is_active' => false]);
