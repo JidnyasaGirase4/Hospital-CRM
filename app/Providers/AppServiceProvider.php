@@ -73,8 +73,19 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // General API throttle applied to every route via
-        // $middleware->throttleApi() in bootstrap/app.php.
+        // $middleware->throttleApi() in bootstrap/app.php. Disabled under
+        // 'testing': the whole feature-test suite runs as one PHP process
+        // sharing one in-memory 'array' cache, so every guest request across
+        // every test (hundreds, all from the same test-client "IP") would
+        // otherwise pool into one bucket and intermittently 429 an unrelated
+        // later test - not a real request pattern, just a test-harness
+        // artifact. The 'login' limiter above stays active in tests since it
+        // scopes by email+IP and is exercised deliberately in AuthTest.
         RateLimiter::for('api', function ($request) {
+            if (app()->environment('testing')) {
+                return Limit::none();
+            }
+
             return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
         });
     }

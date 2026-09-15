@@ -50,8 +50,8 @@ class ReportTest extends TestCase
         $this->actingAsAccountant();
 
         $room = Room::factory()->create();
-        Bed::factory()->create(['room_id' => $room->id, 'status' => 'occupied']);
-        Bed::factory()->create(['room_id' => $room->id, 'status' => 'available']);
+        Bed::factory()->create(['room_id' => $room->id, 'bed_number' => 'A', 'status' => 'occupied']);
+        Bed::factory()->create(['room_id' => $room->id, 'bed_number' => 'B', 'status' => 'available']);
 
         $response = $this->getJson('/api/v1/reports/bed-occupancy')->assertOk();
 
