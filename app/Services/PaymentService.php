@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\Bill;
 use App\Models\Payment;
 use App\Models\Refund;
+use App\Notifications\PaymentReceiptNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class PaymentService
@@ -54,6 +56,14 @@ class PaymentService
             if ($bill) {
                 $bill->update(['paid_amount' => bcadd((string) $bill->paid_amount, (string) $data['amount'], 2)]);
                 $this->billingService->recalculateTotals($bill);
+            }
+
+            if ($payment->receivedBy) {
+                Notification::send($payment->receivedBy, new PaymentReceiptNotification(
+                    $payment->payment_number,
+                    (string) $payment->amount,
+                    $payment->method
+                ));
             }
 
             return $payment->fresh();

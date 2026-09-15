@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\LabOrder;
 use App\Models\LabOrderItem;
 use App\Models\LabResult;
+use App\Notifications\ReportReadyNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -93,6 +95,16 @@ class LabService
 
             $item->update(['status' => 'approved']);
             $this->refreshOrderStatus($item->order);
+
+            $order = $item->order()->with(['doctor', 'patient'])->first();
+
+            if ($order->doctor) {
+                Notification::send($order->doctor, new ReportReadyNotification(
+                    'Laboratory',
+                    $order->patient->fullName(),
+                    $order->patient_id
+                ));
+            }
 
             return $item->fresh('results');
         });

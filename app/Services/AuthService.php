@@ -35,7 +35,7 @@ class AuthService
 
         $token = $user->createToken($deviceName ?: 'api-token')->plainTextToken;
 
-        $this->auditLog->log('login', $user);
+        $this->auditLog->log('login', $user, actorId: $user->id);
 
         return [
             'user' => $user->load('roles'),
@@ -64,7 +64,7 @@ class AuthService
 
                 event(new PasswordReset($user));
 
-                $this->auditLog->log('password-reset', $user);
+                $this->auditLog->log('password-reset', $user, actorId: $user->id);
             }
         );
 

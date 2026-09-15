@@ -8,10 +8,13 @@ use App\Http\Requests\Roles\SyncPermissionsRequest;
 use App\Http\Requests\Roles\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+    public function __construct(private readonly AuditLogService $auditLog) {}
+
     public function index(Request $request)
     {
         $this->authorize('viewAny', Role::class);
@@ -61,6 +64,8 @@ class RoleController extends Controller
     public function syncPermissions(SyncPermissionsRequest $request, Role $role)
     {
         $role->permissions()->sync($request->validated()['permission_ids']);
+
+        $this->auditLog->log('permissions-synced', $role, ['permission_ids' => $request->validated()['permission_ids']]);
 
         $role->users->each->forgetRoleCache();
 

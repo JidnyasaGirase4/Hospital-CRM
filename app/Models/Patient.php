@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Patient extends Model
 {
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'mrn',
@@ -114,6 +115,11 @@ class Patient extends Model
     public function insurancePolicies(): HasMany
     {
         return $this->hasMany(InsurancePolicy::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class)->latest();
     }
 
     public function fullName(): string

@@ -24,3 +24,7 @@ require base_path('routes/v1/ot.php');
 require base_path('routes/v1/billing.php');
 require base_path('routes/v1/insurance.php');
 require base_path('routes/v1/inventory.php');
+require base_path('routes/v1/documents.php');
+require base_path('routes/v1/notifications.php');
+require base_path('routes/v1/reports.php');
+require base_path('routes/v1/audit-logs.php');

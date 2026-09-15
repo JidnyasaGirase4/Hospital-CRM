@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Refund extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'payment_id',
         'amount',

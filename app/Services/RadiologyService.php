@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\RadiologyOrder;
 use App\Models\RadiologyReport;
+use App\Notifications\ReportReadyNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class RadiologyService
@@ -61,7 +63,16 @@ class RadiologyService
                 'approved_at' => now(),
             ]);
 
-            $report->order()->update(['status' => 'completed']);
+            $order = $report->order()->with(['doctor', 'patient'])->first();
+            $order->update(['status' => 'completed']);
+
+            if ($order->doctor) {
+                Notification::send($order->doctor, new ReportReadyNotification(
+                    'Radiology',
+                    $order->patient->fullName(),
+                    $order->patient_id
+                ));
+            }
 
             return $report->fresh();
         });

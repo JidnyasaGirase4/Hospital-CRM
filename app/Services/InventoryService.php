@@ -4,11 +4,18 @@ namespace App\Services;
 
 use App\Models\InventoryItem;
 use App\Models\InventoryTransaction;
+use App\Models\Role;
+use App\Notifications\LowStockAlertNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class InventoryService
 {
+    public function __construct(
+        private readonly StaffNotifier $staffNotifier,
+        private readonly AuditLogService $auditLog
+    ) {}
+
     public function createItem(array $data): InventoryItem
     {
         return InventoryItem::create([
@@ -47,7 +54,7 @@ class InventoryService
                 }
             }
 
-            return InventoryTransaction::create([
+            $transaction = InventoryTransaction::create([
                 'inventory_item_id' => $item->id,
                 'type' => $data['type'],
                 'quantity' => $signedQuantity,
@@ -56,6 +63,21 @@ class InventoryService
                 'transaction_date' => now(),
                 'notes' => $data['notes'] ?? null,
             ]);
+
+            $this->auditLog->log('inventory-stock-changed', $item, [
+                'type' => $data['type'],
+                'signed_quantity' => $signedQuantity,
+                'new_quantity' => $item->stockOnHand(),
+            ]);
+
+            if ($signedQuantity < 0 && $item->isLowStock()) {
+                $this->staffNotifier->notifyRoles(
+                    [Role::INVENTORY_MANAGER],
+                    new LowStockAlertNotification($item->name, $item->stockOnHand(), $item->reorder_level)
+                );
+            }
+
+            return $transaction;
         });
     }
 

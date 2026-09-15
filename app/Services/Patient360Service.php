@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Resources\AdmissionResource;
 use App\Http\Resources\BillResource;
 use App\Http\Resources\DiagnosisResource;
+use App\Http\Resources\DocumentResource;
 use App\Http\Resources\InsurancePolicyResource;
 use App\Http\Resources\LabOrderResource;
 use App\Http\Resources\PaymentResource;
@@ -59,6 +60,7 @@ class Patient360Service
         'bills' => BillResource::class,
         'payments' => PaymentResource::class,
         'insurancePolicies' => InsurancePolicyResource::class,
+        'documents' => DocumentResource::class,
     ];
 
     public function build(Patient $patient): array

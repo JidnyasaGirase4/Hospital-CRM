@@ -11,6 +11,8 @@ use App\Models\PharmacySale;
 use App\Models\PharmacySaleItem;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
+use App\Models\Role;
+use App\Notifications\LowStockAlertNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -22,7 +24,11 @@ use Illuminate\Validation\ValidationException;
  */
 class PharmacyService
 {
-    public function __construct(private readonly SequenceGeneratorService $sequences) {}
+    public function __construct(
+        private readonly SequenceGeneratorService $sequences,
+        private readonly StaffNotifier $staffNotifier,
+        private readonly AuditLogService $auditLog
+    ) {}
 
     /**
      * Receiving stock from a supplier. Adds to (or opens) a batch per line
@@ -73,6 +79,12 @@ class PharmacyService
                     'unit_cost' => $item['unit_cost'],
                     'total_cost' => $lineTotal,
                     'expiry_date' => $item['expiry_date'],
+                ]);
+
+                $this->auditLog->log('medicine-stock-increased', $batch, [
+                    'quantity_added' => $item['quantity'],
+                    'new_quantity' => $batch->quantity,
+                    'reason' => 'purchase',
                 ]);
             }
 
@@ -132,6 +144,8 @@ class PharmacyService
                     PrescriptionItem::where('id', $item['prescription_item_id'])
                         ->increment('dispensed_quantity', $item['quantity']);
                 }
+
+                $this->alertIfLowStock($medicine);
             }
 
             $sale->update([
@@ -194,6 +208,11 @@ class PharmacyService
 
             $take = min($batch->quantity, $remaining);
             $batch->decrement('quantity', $take);
+            $this->auditLog->log('medicine-stock-decreased', $batch, [
+                'quantity_deducted' => $take,
+                'new_quantity' => $batch->fresh()->quantity,
+                'reason' => 'dispense',
+            ]);
             $allocations[] = ['batch' => $batch, 'quantity' => $take];
             $remaining -= $take;
         }
@@ -234,5 +253,17 @@ class PharmacyService
         $prescription->update([
             'status' => $allDispensed ? 'dispensed' : ($anyDispensed ? 'partially-dispensed' : 'active'),
         ]);
+    }
+
+    private function alertIfLowStock(Medicine $medicine): void
+    {
+        $stockOnHand = $medicine->stockOnHand();
+
+        if ($stockOnHand <= $medicine->reorder_level) {
+            $this->staffNotifier->notifyRoles(
+                [Role::PHARMACIST, Role::INVENTORY_MANAGER],
+                new LowStockAlertNotification($medicine->name, $stockOnHand, $medicine->reorder_level)
+            );
+        }
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\Patients\StorePatientRequest;
 use App\Http\Requests\Patients\UpdatePatientRequest;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
+use App\Services\AuditLogService;
 use App\Services\Patient360Service;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class PatientController extends Controller
 {
     public function __construct(
         private readonly PatientService $patientService,
-        private readonly Patient360Service $patient360Service
+        private readonly Patient360Service $patient360Service,
+        private readonly AuditLogService $auditLog
     ) {}
 
     public function index(Request $request)
@@ -72,6 +74,8 @@ class PatientController extends Controller
     public function show360(Patient $patient)
     {
         $this->authorize('view360', $patient);
+
+        $this->auditLog->log('medical-record-accessed', $patient);
 
         $sections = $this->patient360Service->build($patient);
         $sections['profile'] = new PatientResource($sections['profile']);

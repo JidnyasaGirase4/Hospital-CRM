@@ -88,7 +88,7 @@ The backend is being built in the phases below. Each phase is committed independ
 - [x] **Phase 8 — Inventory & Suppliers**
   `inventory_items`, `inventory_transactions` (purchase/issue/return/adjustment/transfer), `suppliers`, `purchase_orders`.
 
-- [ ] **Phase 9 — Documents, Notifications, Reports, Audit Logs (hardening)**
+- [x] **Phase 9 — Documents, Notifications, Reports, Audit Logs (hardening)**
   Secure, non-public document storage (prescriptions, lab/radiology reports, discharge summaries, insurance docs, consent forms) with authorized-only signed download URLs. Notification classes (appointment reminders, low stock, report-ready, payment receipts). Reporting endpoints (revenue, occupancy, pharmacy stock, lab turnaround, etc.). Audit log coverage review across every module in this list.
 
 - [ ] **Phase 10 — Testing**
