@@ -14,6 +14,7 @@ use App\Models\Prescription;
 use App\Models\RadiologyOrder;
 use App\Models\Refund;
 use App\Models\Role;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\RateLimiter;
@@ -40,6 +41,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // This is an API-only app with no "password.reset" web route, so the
+        // default notification's route('password.reset', ...) call would
+        // throw. Point the reset link at the SPA's own /reset-password page
+        // instead, which reads ?token=&email= and calls the API directly.
+        ResetPassword::createUrlUsing(function ($notifiable, string $token) {
+            return config('app.url').'/reset-password?token='.$token.'&email='.urlencode($notifiable->getEmailForPasswordReset());
+        });
+
         // Short, stable aliases for polymorphic columns (audit_logs.auditable_type,
         // documents.documentable_type) instead of raw FQCNs, so stored rows survive
         // a future namespace/class rename. Deliberately NOT enforceMorphMap(): the

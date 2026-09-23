@@ -26,6 +26,11 @@ class UserResource extends JsonResource
                 'name' => $role->name,
                 'slug' => $role->slug,
             ])),
+            'permissions' => $this->whenLoaded('roles', fn () => $this->roles
+                ->flatMap(fn ($role) => $role->relationLoaded('permissions') ? $role->permissions : collect())
+                ->pluck('slug')
+                ->unique()
+                ->values()),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

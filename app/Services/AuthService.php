@@ -38,7 +38,7 @@ class AuthService
         $this->auditLog->log('login', $user, actorId: $user->id);
 
         return [
-            'user' => $user->load('roles'),
+            'user' => $user->load('roles.permissions'),
             'token' => $token,
         ];
     }
