@@ -16,7 +16,7 @@ async function fetchPatients(q) {
 }
 
 async function fetchSurgeons(q) {
-    const { data } = await apiClient.get('/users', { params: { search: q, per_page: 10 } });
+    const { data } = await apiClient.get('/lookups/staff', { params: { search: q } });
     return data.data.map((u) => ({ id: u.id, label: u.name }));
 }
 
@@ -35,43 +35,43 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">Schedule Surgery</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">Schedule Surgery</h2>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="form.patient_id" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-            <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+            <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Surgeon</label>
+            <label class="label">Surgeon</label>
             <SearchSelect v-model="form.surgeon_id" :fetcher="fetchSurgeons" placeholder="Search staff by name…" />
-            <p v-if="errors.surgeon_id" class="text-xs text-red-600 mt-1">{{ errors.surgeon_id[0] }}</p>
+            <p v-if="errors.surgeon_id" class="field-error">{{ errors.surgeon_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Procedure name</label>
-            <input v-model="form.procedure_name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.procedure_name" class="text-xs text-red-600 mt-1">{{ errors.procedure_name[0] }}</p>
+            <label class="label">Procedure name</label>
+            <input v-model="form.procedure_name" class="input" />
+            <p v-if="errors.procedure_name" class="field-error">{{ errors.procedure_name[0] }}</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">OT room</label>
-                <input v-model="form.ot_room" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">OT room</label>
+                <input v-model="form.ot_room" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Scheduled at</label>
-                <input v-model="form.scheduled_at" type="datetime-local" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.scheduled_at" class="text-xs text-red-600 mt-1">{{ errors.scheduled_at[0] }}</p>
+                <label class="label">Scheduled at</label>
+                <input v-model="form.scheduled_at" type="datetime-local" class="input" />
+                <p v-if="errors.scheduled_at" class="field-error">{{ errors.scheduled_at[0] }}</p>
             </div>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Notes</label>
-            <textarea v-model="form.notes" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
+            <label class="label">Notes</label>
+            <textarea v-model="form.notes" rows="2" class="input"></textarea>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'ot-schedules.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'ot-schedules.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

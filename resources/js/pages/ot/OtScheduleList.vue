@@ -59,7 +59,7 @@ watch(page, load);
     <div class="space-y-4">
         <div class="flex items-center justify-end">
             <PermissionGate permission="ot.create">
-                <RouterLink :to="{ name: 'ot-schedules.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'ot-schedules.create' }" class="btn btn-primary">
                     + Schedule Surgery
                 </RouterLink>
             </PermissionGate>
@@ -68,9 +68,9 @@ watch(page, load);
             <template #actions="{ row }">
                 <PermissionGate permission="ot.update">
                     <div class="flex gap-2 justify-end text-xs">
-                        <button v-if="row.status === 'scheduled'" type="button" class="text-brand-600 hover:underline" @click="start(row)">Start</button>
-                        <button v-if="row.status === 'in-progress'" type="button" class="text-emerald-600 hover:underline" @click="complete(row)">Complete</button>
-                        <button v-if="row.status === 'scheduled'" type="button" class="text-red-600 hover:underline" @click="cancel(row)">Cancel</button>
+                        <button v-if="row.status === 'scheduled'" type="button" class="btn btn-sm btn-soft" @click="start(row)">Start</button>
+                        <button v-if="row.status === 'in-progress'" type="button" class="btn btn-sm btn-success-soft" @click="complete(row)">Complete</button>
+                        <button v-if="row.status === 'scheduled'" type="button" class="btn btn-sm btn-danger-soft" @click="cancel(row)">Cancel</button>
                     </div>
                 </PermissionGate>
             </template>

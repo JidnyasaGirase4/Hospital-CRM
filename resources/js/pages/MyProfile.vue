@@ -1,4 +1,5 @@
 <script setup>
+import PageLoader from '../components/PageLoader.vue';
 import { ref, onMounted } from 'vue';
 import apiClient from '../api/client';
 import { useAuthStore } from '../stores/auth';
@@ -40,32 +41,32 @@ onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <form v-else class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">My Profile</h2>
+    <PageLoader v-if="loading" />
+    <form v-else class="card mx-auto max-w-2xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">My Profile</h2>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-            <input v-model="form.name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.name" class="text-xs text-red-600 mt-1">{{ errors.name[0] }}</p>
+            <label class="label">Name</label>
+            <input v-model="form.name" class="input" />
+            <p v-if="errors.name" class="field-error">{{ errors.name[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-            <input v-model="form.email" type="email" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.email" class="text-xs text-red-600 mt-1">{{ errors.email[0] }}</p>
+            <label class="label">Email</label>
+            <input v-model="form.email" type="email" class="input" />
+            <p v-if="errors.email" class="field-error">{{ errors.email[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Mobile</label>
-            <input v-model="form.mobile" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+            <label class="label">Mobile</label>
+            <input v-model="form.mobile" class="input" />
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">New password (optional)</label>
-            <input v-model="form.password" type="password" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.password" class="text-xs text-red-600 mt-1">{{ errors.password[0] }}</p>
+            <label class="label">New password (optional)</label>
+            <input v-model="form.password" type="password" class="input" />
+            <p v-if="errors.password" class="field-error">{{ errors.password[0] }}</p>
         </div>
 
         <div class="flex justify-end">
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save Changes' }}
             </button>
         </div>

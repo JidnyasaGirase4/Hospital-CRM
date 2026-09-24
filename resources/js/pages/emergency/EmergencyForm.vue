@@ -30,20 +30,20 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">Register Emergency Visit</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">Register Emergency Visit</h2>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="patientId" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-            <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+            <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Chief complaint</label>
-            <textarea v-model="chiefComplaint" rows="3" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
+            <label class="label">Chief complaint</label>
+            <textarea v-model="chiefComplaint" rows="3" class="input"></textarea>
         </div>
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'emergency-visits.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'emergency-visits.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Register' }}
             </button>
         </div>

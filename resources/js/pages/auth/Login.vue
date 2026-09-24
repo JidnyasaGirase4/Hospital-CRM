@@ -8,7 +8,7 @@ const auth = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const email = ref('admin@hospital-crm.test');
+const email = ref('admin@gmail.com');
 const password = ref('');
 const error = ref('');
 const loading = ref(false);
@@ -63,7 +63,7 @@ async function submit() {
         </div>
 
         <div class="flex-1 flex items-center justify-center bg-slate-50 px-4">
-            <form class="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-slate-100 p-8 space-y-4" @submit.prevent="submit">
+            <form class="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-slate-900/5 border border-slate-100 p-8 space-y-5" @submit.prevent="submit">
                 <div class="lg:hidden flex items-center gap-2 mb-2">
                     <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-rose-600 flex items-center justify-center">
                         <Icon name="heart" :size="16" class="text-white" />
@@ -74,24 +74,24 @@ async function submit() {
                     <h1 class="text-xl font-semibold text-slate-800">Welcome back</h1>
                     <p class="text-sm text-slate-500">Sign in to your staff account</p>
                 </div>
-                <div v-if="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                <div v-if="error" class="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-700">
                     {{ error }}
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                    <input v-model="email" type="email" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent" />
+                    <label class="label">Email</label>
+                    <input v-model="email" type="email" required class="input focus:border-rose-500 focus:ring-rose-500/15" />
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-1">
-                        <label class="block text-sm font-medium text-slate-700">Password</label>
-                        <RouterLink :to="{ name: 'forgot-password' }" class="text-xs text-rose-600 hover:underline">Forgot password?</RouterLink>
+                        <label class="label">Password</label>
+                        <RouterLink :to="{ name: 'forgot-password' }" class="text-xs font-semibold text-rose-600 hover:underline">Forgot password?</RouterLink>
                     </div>
                     <div class="relative">
                         <input
                             v-model="password"
                             :type="showPassword ? 'text' : 'password'"
                             required
-                            class="w-full border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                            class="input pr-10 focus:border-rose-500 focus:ring-rose-500/15"
                         />
                         <button
                             type="button"
@@ -104,7 +104,7 @@ async function submit() {
                         </button>
                     </div>
                 </div>
-                <button type="submit" :disabled="loading" class="w-full bg-gradient-to-r from-orange-500 to-rose-600 text-white rounded-lg px-3 py-2.5 text-sm font-semibold hover:from-orange-600 hover:to-rose-700 disabled:opacity-50 shadow-sm shadow-rose-600/30 transition-all">
+                <button type="submit" :disabled="loading" class="btn w-full bg-gradient-to-r from-orange-500 to-rose-600 py-3 text-white shadow-md shadow-rose-600/30 hover:from-orange-600 hover:to-rose-700">
                     {{ loading ? 'Signing in…' : 'Sign in' }}
                 </button>
             </form>

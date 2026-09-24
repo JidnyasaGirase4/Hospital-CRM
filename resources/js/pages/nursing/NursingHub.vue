@@ -26,7 +26,7 @@ async function fetchPatients(q) {
 }
 
 async function fetchMedicines(q) {
-    const { data } = await apiClient.get('/medicines', { params: { search: q, per_page: 10 } });
+    const { data } = await apiClient.get('/lookups/medicines', { params: { search: q } });
     return data.data.map((m) => ({ id: m.id, label: `${m.name} ${m.strength || ''}`.trim() }));
 }
 
@@ -73,41 +73,41 @@ onMounted(() => {
 
 <template>
     <div class="space-y-4">
-        <div class="flex gap-4 border-b border-slate-200">
+        <div class="tab-bar">
             <button v-for="t in ['vitals', 'notes', 'medications']" :key="t" type="button"
-                class="pb-2 text-sm capitalize"
-                :class="tab === t ? 'text-slate-900 border-b-2 border-slate-900 font-medium' : 'text-slate-500'"
+                class="tab"
+                :class="{ 'tab-active': tab === t }"
                 @click="tab = t">{{ t }}</button>
         </div>
 
         <div v-if="tab === 'vitals'" class="space-y-4">
             <PermissionGate permission="nursing.create">
-                <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-2" @submit.prevent="addVital">
+                <form class="card p-4 space-y-2" @submit.prevent="addVital">
                     <SearchSelect v-model="vitalPatient" :fetcher="fetchPatients" placeholder="Search patient…" />
                     <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
-                        <input v-model.number="vitalForm.temperature_c" type="number" step="0.1" placeholder="Temp °C" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                        <input v-model.number="vitalForm.pulse" type="number" placeholder="Pulse" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                        <input v-model.number="vitalForm.bp_systolic" type="number" placeholder="BP Sys" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                        <input v-model.number="vitalForm.bp_diastolic" type="number" placeholder="BP Dia" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                        <input v-model.number="vitalForm.respiratory_rate" type="number" placeholder="Resp Rate" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                        <input v-model.number="vitalForm.spo2" type="number" placeholder="SpO2" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
+                        <input v-model.number="vitalForm.temperature_c" type="number" step="0.1" placeholder="Temp °C" class="input input-sm" />
+                        <input v-model.number="vitalForm.pulse" type="number" placeholder="Pulse" class="input input-sm" />
+                        <input v-model.number="vitalForm.bp_systolic" type="number" placeholder="BP Sys" class="input input-sm" />
+                        <input v-model.number="vitalForm.bp_diastolic" type="number" placeholder="BP Dia" class="input input-sm" />
+                        <input v-model.number="vitalForm.respiratory_rate" type="number" placeholder="Resp Rate" class="input input-sm" />
+                        <input v-model.number="vitalForm.spo2" type="number" placeholder="SpO2" class="input input-sm" />
                     </div>
-                    <button type="submit" class="bg-brand-600 text-white text-sm px-4 py-1.5 rounded">Record Vitals</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Record Vitals</button>
                 </form>
             </PermissionGate>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-                <table class="w-full text-sm">
-                    <thead class="text-left text-slate-500"><tr><th>Patient</th><th>Temp</th><th>Pulse</th><th>BP</th><th>SpO2</th><th>Recorded</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
+            <div class="card p-4">
+                <table class="table-simple">
+                    <thead><tr><th>Patient</th><th>Temp</th><th>Pulse</th><th>BP</th><th>SpO2</th><th>Recorded</th></tr></thead>
+                    <tbody>
                         <tr v-for="v in vitals" :key="v.id">
-                            <td class="py-1.5">#{{ v.patient_id }}</td>
+                            <td class="font-medium text-slate-800">#{{ v.patient_id }}</td>
                             <td>{{ v.temperature_c ?? '—' }}</td>
                             <td>{{ v.pulse ?? '—' }}</td>
                             <td>{{ v.bp_systolic ?? '—' }}/{{ v.bp_diastolic ?? '—' }}</td>
                             <td>{{ v.spo2 ?? '—' }}</td>
                             <td>{{ v.recorded_at }}</td>
                         </tr>
-                        <tr v-if="vitals.length === 0"><td colspan="6" class="text-slate-400 py-3 text-center">No vitals recorded yet</td></tr>
+                        <tr v-if="vitals.length === 0"><td colspan="6" class="empty-note">No vitals recorded yet</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -115,27 +115,27 @@ onMounted(() => {
 
         <div v-if="tab === 'notes'" class="space-y-4">
             <PermissionGate permission="nursing.create">
-                <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-2" @submit.prevent="addNote">
+                <form class="card p-4 space-y-2" @submit.prevent="addNote">
                     <SearchSelect v-model="notePatient" :fetcher="fetchPatients" placeholder="Search patient…" />
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <select v-model="noteForm.type" class="border border-slate-300 rounded px-2 py-1.5 text-sm">
+                        <select v-model="noteForm.type" class="input input-sm">
                             <option value="general">General</option>
                             <option value="intake-output">Intake/Output</option>
                             <option value="care-plan">Care Plan</option>
                             <option value="shift-handover">Shift Handover</option>
                         </select>
-                        <select v-model="noteForm.shift" class="border border-slate-300 rounded px-2 py-1.5 text-sm">
+                        <select v-model="noteForm.shift" class="input input-sm">
                             <option value="">Shift…</option>
                             <option value="morning">Morning</option>
                             <option value="evening">Evening</option>
                             <option value="night">Night</option>
                         </select>
                     </div>
-                    <textarea v-model="noteForm.note" rows="2" placeholder="Note" class="w-full border border-slate-300 rounded px-2 py-1.5 text-sm"></textarea>
-                    <button type="submit" class="bg-brand-600 text-white text-sm px-4 py-1.5 rounded">Add Note</button>
+                    <textarea v-model="noteForm.note" rows="2" placeholder="Note" class="input input-sm"></textarea>
+                    <button type="submit" class="btn btn-primary btn-sm">Add Note</button>
                 </form>
             </PermissionGate>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-2">
+            <div class="card p-4 space-y-2">
                 <div v-for="n in notes" :key="n.id" class="text-sm border-b border-slate-100 pb-2">
                     <p class="text-slate-400 text-xs">Patient #{{ n.patient_id }} · {{ n.type }} · {{ n.shift || '—' }} · {{ n.recorded_at }} · by {{ n.nurse?.name }}</p>
                     <p>{{ n.note }}</p>
@@ -146,30 +146,30 @@ onMounted(() => {
 
         <div v-if="tab === 'medications'" class="space-y-4">
             <PermissionGate permission="nursing.create">
-                <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-2" @submit.prevent="addMed">
+                <form class="card p-4 space-y-2" @submit.prevent="addMed">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <SearchSelect v-model="medPatient" :fetcher="fetchPatients" placeholder="Search patient…" />
                         <SearchSelect v-model="medicineId" :fetcher="fetchMedicines" placeholder="Search medicine…" />
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input v-model="medForm.dose_given" placeholder="Dose given" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                        <input v-model="medForm.notes" placeholder="Notes" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
+                        <input v-model="medForm.dose_given" placeholder="Dose given" class="input input-sm" />
+                        <input v-model="medForm.notes" placeholder="Notes" class="input input-sm" />
                     </div>
-                    <button type="submit" class="bg-brand-600 text-white text-sm px-4 py-1.5 rounded">Record Administration</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Record Administration</button>
                 </form>
             </PermissionGate>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-                <table class="w-full text-sm">
-                    <thead class="text-left text-slate-500"><tr><th>Patient</th><th>Medicine</th><th>Dose</th><th>By</th><th>At</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
+            <div class="card p-4">
+                <table class="table-simple">
+                    <thead><tr><th>Patient</th><th>Medicine</th><th>Dose</th><th>By</th><th>At</th></tr></thead>
+                    <tbody>
                         <tr v-for="m in meds" :key="m.id">
-                            <td class="py-1.5">#{{ m.patient_id }}</td>
+                            <td class="font-medium text-slate-800">#{{ m.patient_id }}</td>
                             <td>{{ m.medicine?.name }}</td>
                             <td>{{ m.dose_given || '—' }}</td>
                             <td>{{ m.administered_by?.name }}</td>
                             <td>{{ m.administered_at }}</td>
                         </tr>
-                        <tr v-if="meds.length === 0"><td colspan="5" class="text-slate-400 py-3 text-center">No records yet</td></tr>
+                        <tr v-if="meds.length === 0"><td colspan="5" class="empty-note">No records yet</td></tr>
                     </tbody>
                 </table>
             </div>

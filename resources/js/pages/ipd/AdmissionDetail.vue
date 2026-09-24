@@ -1,9 +1,14 @@
 <script setup>
+import PageLoader from '../../components/PageLoader.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import apiClient from '../../api/client';
 import PermissionGate from '../../components/PermissionGate.vue';
 import { useUiStore } from '../../stores/ui';
+import PageHero from '../../components/PageHero.vue';
+import SectionCard from '../../components/SectionCard.vue';
+import Icon from '../../components/Icon.vue';
+import { formatDateTime, doctorName } from '../../utils/format';
 
 const ui = useUiStore();
 const route = useRoute();
@@ -30,7 +35,7 @@ async function discharge() {
 }
 
 async function transferBed() {
-    const { data } = await apiClient.get('/beds', { params: { status: 'available' } });
+    const { data } = await apiClient.get('/lookups/beds');
     const availableBeds = data.data;
     if (availableBeds.length === 0) {
         ui.toast('No available beds to transfer to', 'error');
@@ -43,7 +48,7 @@ async function transferBed() {
             label: 'Transfer to bed',
             type: 'select',
             required: true,
-            options: availableBeds.map((b) => ({ value: b.id, label: `Bed ${b.bed_number}` })),
+            options: availableBeds.map((b) => ({ value: b.id, label: `Bed ${b.bed_number}${b.ward ? ` — ${b.ward}, Room ${b.room_number}` : ''}` })),
         }],
     });
     if (!result) return;
@@ -69,30 +74,40 @@ onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <div v-else-if="admission" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-slate-900">{{ admission.patient?.name }} ({{ admission.patient?.mrn }})</h2>
-                <p class="text-sm text-slate-500">Dr. {{ admission.doctor?.name }} · {{ admission.admission_type || 'General' }} · {{ admission.status }}</p>
-            </div>
-        </div>
-        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div><dt class="text-slate-400">Admitted</dt><dd>{{ admission.admission_date }}</dd></div>
-            <div><dt class="text-slate-400">Discharged</dt><dd>{{ admission.discharge_date || '—' }}</dd></div>
-            <div><dt class="text-slate-400">Current bed</dt><dd>{{ admission.current_bed?.bed?.bed_number || 'Not allocated' }}</dd></div>
-            <div><dt class="text-slate-400">Reason</dt><dd>{{ admission.reason || '—' }}</dd></div>
-        </dl>
-        <p v-if="admission.discharge_summary" class="text-sm text-slate-600"><span class="text-slate-400">Discharge summary:</span> {{ admission.discharge_summary }}</p>
+    <PageLoader v-if="loading" />
+    <div v-else-if="admission" class="space-y-5">
+        <PageHero
+            :title="admission.patient?.name ?? 'Admission'"
+            :status="admission.status"
+            :subtitle="`MRN ${admission.patient?.mrn ?? '—'} · ${doctorName(admission.doctor?.name)} · ${admission.admission_type || 'General'} admission`"
+            initials
+        >
+            <template #actions>
+                <template v-if="admission.status !== 'discharged'">
+                    <PermissionGate permission="beds.allocate">
+                        <button type="button" class="btn btn-soft" @click="transferBed">Transfer Bed</button>
+                    </PermissionGate>
+                    <PermissionGate permission="ipd.discharge">
+                        <button type="button" class="btn btn-danger-soft" @click="discharge">Discharge</button>
+                    </PermissionGate>
+                </template>
+                <PermissionGate permission="billing.create">
+                    <button v-if="admission.status === 'discharged'" type="button" class="btn btn-primary" @click="generateFinalBill"><Icon name="banknote" :size="16" /> Generate Final Bill</button>
+                </PermissionGate>
+            </template>
+        </PageHero>
 
-        <PermissionGate permission="ipd.update">
-            <div v-if="admission.status !== 'discharged'" class="flex gap-3">
-                <button type="button" class="text-sm text-brand-600 hover:underline" @click="transferBed">Transfer Bed</button>
-                <button type="button" class="text-sm text-red-600 hover:underline" @click="discharge">Discharge</button>
+        <SectionCard title="Admission Details">
+            <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="kv"><dt>Admitted</dt><dd>{{ formatDateTime(admission.admission_date) }}</dd></div>
+                <div class="kv"><dt>Discharged</dt><dd>{{ admission.discharge_date ? formatDateTime(admission.discharge_date) : 'Still admitted' }}</dd></div>
+                <div class="kv"><dt>Current bed</dt><dd>{{ admission.current_bed?.bed?.bed_number || 'Not allocated' }}</dd></div>
+                <div class="kv"><dt>Reason</dt><dd>{{ admission.reason || '—' }}</dd></div>
+            </dl>
+            <div v-if="admission.discharge_summary" class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Discharge summary</p>
+                <p class="mt-1 text-sm text-emerald-900">{{ admission.discharge_summary }}</p>
             </div>
-        </PermissionGate>
-        <PermissionGate permission="billing.create">
-            <button v-if="admission.status === 'discharged'" type="button" class="text-sm text-brand-600 hover:underline" @click="generateFinalBill">Generate Final Bill</button>
-        </PermissionGate>
+        </SectionCard>
     </div>
 </template>

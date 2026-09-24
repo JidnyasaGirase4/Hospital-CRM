@@ -65,13 +65,13 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
+        <div class="toolbar">
+            <div class="toolbar-filters">
                 <input
                     v-model="search"
                     type="text"
                     placeholder="Search medicines…"
-                    class="w-64 border border-slate-300 rounded px-3 py-2 text-sm"
+                    class="input w-64"
                     @keyup.enter="onSearch"
                 />
                 <button type="button" class="text-sm" :class="lowStockOnly ? 'text-red-600 font-medium' : 'text-slate-500'" @click="toggleLowStock">
@@ -79,18 +79,18 @@ watch(page, load);
                 </button>
             </div>
             <PermissionGate permission="pharmacy.create">
-                <RouterLink :to="{ name: 'medicines.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'medicines.create' }" class="btn btn-primary">
                     + New Medicine
                 </RouterLink>
             </PermissionGate>
         </div>
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }">
             <template #cell-name="{ row }">
-                <RouterLink :to="{ name: 'medicines.edit', params: { id: row.id } }" class="text-brand-600 hover:underline">{{ row.name }}</RouterLink>
+                <RouterLink :to="{ name: 'medicines.edit', params: { id: row.id } }" class="link">{{ row.name }}</RouterLink>
             </template>
             <template #actions="{ row }">
                 <PermissionGate v-if="row.is_active" permission="pharmacy.delete">
-                    <button type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="deactivate(row)">Deactivate</button>
+                    <button type="button" class="btn btn-sm btn-danger-soft" @click="deactivate(row)">Deactivate</button>
                 </PermissionGate>
             </template>
         </DataTable>

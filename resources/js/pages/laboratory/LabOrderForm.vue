@@ -20,7 +20,7 @@ async function fetchPatients(q) {
 }
 
 async function fetchDoctors(q) {
-    const { data } = await apiClient.get('/users', { params: { search: q, per_page: 10 } });
+    const { data } = await apiClient.get('/lookups/staff', { params: { search: q } });
     return data.data.map((u) => ({ id: u.id, label: u.name }));
 }
 
@@ -49,36 +49,36 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">New Lab Order</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">New Lab Order</h2>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="patientId" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-            <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+            <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Doctor</label>
+            <label class="label">Doctor</label>
             <SearchSelect v-model="doctorId" :fetcher="fetchDoctors" placeholder="Search staff by name…" />
-            <p v-if="errors.doctor_id" class="text-xs text-red-600 mt-1">{{ errors.doctor_id[0] }}</p>
+            <p v-if="errors.doctor_id" class="field-error">{{ errors.doctor_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Tests</label>
+            <label class="label">Tests</label>
             <div class="flex flex-wrap gap-2">
-                <label v-for="t in tests" :key="t.id" class="flex items-center gap-2 text-sm border border-slate-200 rounded px-3 py-1.5">
+                <label v-for="t in tests" :key="t.id" class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-brand-300 hover:bg-brand-50/50">
                     <input type="checkbox" :value="t.id" v-model="selectedTestIds" /> {{ t.name }}
                 </label>
             </div>
-            <p v-if="errors.test_ids" class="text-xs text-red-600 mt-1">{{ errors.test_ids[0] }}</p>
+            <p v-if="errors.test_ids" class="field-error">{{ errors.test_ids[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Notes</label>
-            <textarea v-model="notes" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
+            <label class="label">Notes</label>
+            <textarea v-model="notes" rows="2" class="input"></textarea>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'lab-orders.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'lab-orders.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

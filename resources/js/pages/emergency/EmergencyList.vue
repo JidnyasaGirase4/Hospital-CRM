@@ -81,23 +81,23 @@ watch(page, load);
     <div class="space-y-4">
         <div class="flex items-center justify-end">
             <PermissionGate permission="emergency.create">
-                <RouterLink :to="{ name: 'emergency-visits.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'emergency-visits.create' }" class="btn btn-primary">
                     + Register Visit
                 </RouterLink>
             </PermissionGate>
         </div>
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }">
             <template #cell-patient="{ row }">
-                <RouterLink :to="{ name: 'emergency-visits.show', params: { id: row.id } }" class="text-brand-600 hover:underline">{{ row.patient?.name ?? '—' }}</RouterLink>
+                <RouterLink :to="{ name: 'emergency-visits.show', params: { id: row.id } }" class="link">{{ row.patient?.name ?? '—' }}</RouterLink>
             </template>
             <template #actions="{ row }">
                 <PermissionGate permission="emergency.update">
                     <div class="flex gap-2 justify-end text-xs">
-                        <button v-if="row.status === 'registered'" type="button" class="text-amber-600 hover:underline" @click="triage(row)">Triage</button>
-                        <button v-if="row.status === 'triaged'" type="button" class="text-brand-600 hover:underline" @click="startTreatment(row)">Start Treatment</button>
+                        <button v-if="row.status === 'registered'" type="button" class="btn btn-sm btn-warn-soft" @click="triage(row)">Triage</button>
+                        <button v-if="row.status === 'triaged'" type="button" class="btn btn-sm btn-soft" @click="startTreatment(row)">Start Treatment</button>
                         <template v-if="row.status === 'in-treatment'">
-                            <button type="button" class="text-emerald-600 hover:underline" @click="discharge(row)">Discharge</button>
-                            <button type="button" class="text-purple-600 hover:underline" @click="refer(row)">Refer</button>
+                            <button type="button" class="btn btn-sm btn-success-soft" @click="discharge(row)">Discharge</button>
+                            <button type="button" class="btn btn-sm btn-soft" @click="refer(row)">Refer</button>
                         </template>
                     </div>
                 </PermissionGate>

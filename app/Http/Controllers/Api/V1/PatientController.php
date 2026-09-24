@@ -9,6 +9,7 @@ use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\AuditLogService;
 use App\Services\Patient360Service;
+use App\Services\PatientReportService;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ class PatientController extends Controller
     public function __construct(
         private readonly PatientService $patientService,
         private readonly Patient360Service $patient360Service,
+        private readonly PatientReportService $patientReportService,
         private readonly AuditLogService $auditLog
     ) {}
 
@@ -81,5 +83,17 @@ class PatientController extends Controller
         $sections['profile'] = new PatientResource($sections['profile']);
 
         return $this->success($sections, 'Patient 360 retrieved successfully');
+    }
+
+    public function completeReport(Request $request, Patient $patient)
+    {
+        $this->authorize('view', $patient);
+
+        $this->auditLog->log('medical-record-accessed', $patient);
+
+        return $this->success(
+            $this->patientReportService->build($patient, $request->user(), $request),
+            'Complete patient report retrieved successfully'
+        );
     }
 }

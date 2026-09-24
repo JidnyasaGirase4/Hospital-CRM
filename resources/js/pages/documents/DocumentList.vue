@@ -96,22 +96,22 @@ watch(page, load);
     <div class="space-y-4">
         <div class="flex items-center justify-end">
             <PermissionGate permission="documents.view">
-                <button type="button" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all" @click="showForm = !showForm">
+                <button type="button" class="btn btn-primary" @click="showForm = !showForm">
                     {{ showForm ? 'Cancel' : '+ Upload Document' }}
                 </button>
             </PermissionGate>
         </div>
-        <form v-if="showForm" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3" @submit.prevent="upload">
+        <form v-if="showForm" class="card p-4 space-y-3" @submit.prevent="upload">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <SearchSelect v-model="uploadPatientId" :fetcher="fetchPatients" placeholder="Search patient…" />
-                <input v-model="uploadForm.title" placeholder="Title" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <select v-model="uploadForm.category" class="border border-slate-300 rounded px-2 py-1.5 text-sm">
+                <input v-model="uploadForm.title" placeholder="Title" class="input input-sm" />
+                <select v-model="uploadForm.category" class="input input-sm">
                     <option v-for="c in ['prescription', 'lab-report', 'radiology-report', 'discharge-summary', 'insurance', 'consent', 'other']" :key="c" :value="c">{{ c }}</option>
                 </select>
             </div>
             <input ref="fileInput" type="file" class="text-sm" />
-            <p v-if="errors.file" class="text-xs text-red-600">{{ errors.file[0] }}</p>
-            <button type="submit" :disabled="uploading" class="bg-brand-600 text-white text-sm px-4 py-1.5 rounded disabled:opacity-50">
+            <p v-if="errors.file" class="field-error">{{ errors.file[0] }}</p>
+            <button type="submit" :disabled="uploading" class="btn btn-primary btn-sm">
                 {{ uploading ? 'Uploading…' : 'Upload' }}
             </button>
         </form>
@@ -119,10 +119,10 @@ watch(page, load);
             <template #actions="{ row }">
                 <div class="flex gap-2 justify-end text-xs">
                     <PermissionGate permission="documents.download">
-                        <button type="button" class="text-brand-600 hover:underline" @click="download(row)">Download</button>
+                        <button type="button" class="btn btn-sm btn-soft" @click="download(row)">Download</button>
                     </PermissionGate>
                     <PermissionGate permission="documents.delete">
-                        <button type="button" class="text-red-600 hover:underline" @click="remove(row)">Delete</button>
+                        <button type="button" class="btn btn-sm btn-danger-soft" @click="remove(row)">Delete</button>
                     </PermissionGate>
                 </div>
             </template>

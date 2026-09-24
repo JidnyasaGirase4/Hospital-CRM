@@ -1,9 +1,13 @@
 <script setup>
+import PageLoader from '../../components/PageLoader.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import apiClient from '../../api/client';
 import PermissionGate from '../../components/PermissionGate.vue';
 import { useUiStore } from '../../stores/ui';
+import PageHero from '../../components/PageHero.vue';
+import SectionCard from '../../components/SectionCard.vue';
+import { formatDateTime } from '../../utils/format';
 
 const ui = useUiStore();
 const route = useRoute();
@@ -65,26 +69,33 @@ onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <div v-else-if="visit" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-        <div>
-            <h2 class="text-lg font-semibold text-slate-900">{{ visit.patient?.name }} ({{ visit.patient?.mrn }})</h2>
-            <p class="text-sm text-slate-500">{{ visit.status }} · Triage: {{ visit.triage_level || 'Not triaged' }} · {{ visit.registered_at }}</p>
-        </div>
-        <p class="text-sm text-slate-600"><span class="text-slate-400">Chief complaint:</span> {{ visit.chief_complaint || '—' }}</p>
-        <p v-if="visit.treatment_notes" class="text-sm text-slate-600"><span class="text-slate-400">Treatment notes:</span> {{ visit.treatment_notes }}</p>
-        <p v-if="visit.referred_to" class="text-sm text-slate-600"><span class="text-slate-400">Referred to:</span> {{ visit.referred_to }}</p>
+    <PageLoader v-if="loading" />
+    <div v-else-if="visit" class="space-y-5">
+        <PageHero
+            :title="visit.patient?.name ?? 'Emergency Visit'"
+            :status="visit.status"
+            :subtitle="`MRN ${visit.patient?.mrn ?? '—'} · Triage: ${visit.triage_level || 'Not triaged'} · Registered ${formatDateTime(visit.registered_at)}`"
+            initials
+        >
+            <template #actions>
+                <PermissionGate permission="emergency.update">
+                    <button v-if="visit.status === 'registered'" type="button" class="btn btn-warn-soft" @click="triage">Triage</button>
+                    <button v-if="visit.status === 'triaged'" type="button" class="btn btn-primary" @click="startTreatment">Start Treatment</button>
+                    <template v-if="visit.status === 'in-treatment'">
+                        <button type="button" class="btn btn-soft" @click="admit">Admit</button>
+                        <button type="button" class="btn btn-success-soft" @click="discharge">Discharge</button>
+                        <button type="button" class="btn btn-soft" @click="refer">Refer</button>
+                    </template>
+                </PermissionGate>
+            </template>
+        </PageHero>
 
-        <PermissionGate permission="emergency.update">
-            <div class="flex gap-3 flex-wrap">
-                <button v-if="visit.status === 'registered'" type="button" class="text-sm text-amber-600 hover:underline" @click="triage">Triage</button>
-                <button v-if="visit.status === 'triaged'" type="button" class="text-sm text-brand-600 hover:underline" @click="startTreatment">Start Treatment</button>
-                <template v-if="visit.status === 'in-treatment'">
-                    <button type="button" class="text-sm text-indigo-600 hover:underline" @click="admit">Admit</button>
-                    <button type="button" class="text-sm text-emerald-600 hover:underline" @click="discharge">Discharge</button>
-                    <button type="button" class="text-sm text-purple-600 hover:underline" @click="refer">Refer</button>
-                </template>
-            </div>
-        </PermissionGate>
+        <SectionCard title="Visit Details">
+            <dl class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div class="kv md:col-span-2"><dt>Chief complaint</dt><dd class="font-medium">{{ visit.chief_complaint || '—' }}</dd></div>
+                <div v-if="visit.treatment_notes" class="kv md:col-span-2"><dt>Treatment notes</dt><dd class="whitespace-pre-line font-medium">{{ visit.treatment_notes }}</dd></div>
+                <div v-if="visit.referred_to" class="kv"><dt>Referred to</dt><dd>{{ visit.referred_to }}</dd></div>
+            </dl>
+        </SectionCard>
     </div>
 </template>

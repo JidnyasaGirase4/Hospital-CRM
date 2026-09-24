@@ -1,22 +1,14 @@
 <script setup>
+import HubGrid from '../../components/HubGrid.vue';
+
 const links = [
-    { to: 'opd-visits.index', label: 'OPD Visits', desc: 'Vitals, symptoms, diagnosis notes per visit' },
-    { to: 'consultations.index', label: 'Consultations', desc: 'Doctor consultation records' },
-    { to: 'diagnoses.index', label: 'Diagnoses', desc: 'Recorded diagnoses per patient' },
-    { to: 'prescriptions.index', label: 'Prescriptions', desc: 'Medicines prescribed to patients' },
+    { to: 'opd-visits.index', label: 'OPD Visits', desc: 'Vitals, symptoms, diagnosis notes per visit', icon: 'clipboard' },
+    { to: 'consultations.index', label: 'Consultations', desc: 'Doctor consultation records', icon: 'users' },
+    { to: 'diagnoses.index', label: 'Diagnoses', desc: 'Recorded diagnoses per patient', icon: 'shield-check' },
+    { to: 'prescriptions.index', label: 'Prescriptions', desc: 'Medicines prescribed to patients', icon: 'document' },
 ];
 </script>
 
 <template>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <RouterLink
-            v-for="link in links"
-            :key="link.to"
-            :to="{ name: link.to }"
-            class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hover:border-brand-300 hover:shadow-sm"
-        >
-            <h3 class="font-semibold text-slate-800">{{ link.label }}</h3>
-            <p class="text-sm text-slate-500 mt-1">{{ link.desc }}</p>
-        </RouterLink>
-    </div>
+    <HubGrid :links="links" />
 </template>

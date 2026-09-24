@@ -61,6 +61,7 @@ class RolePermissionSeeder extends Seeder
             'laboratory' => ['view', 'create'],
             'radiology' => ['view', 'create'],
             'ipd' => ['view', 'admit', 'discharge'],
+            'beds' => ['view', 'allocate'],
             'nursing' => ['view'],
             'emergency' => ['view', 'create', 'update'],
             'documents' => ['view', 'create', 'download'],
@@ -69,7 +70,7 @@ class RolePermissionSeeder extends Seeder
             'patients' => ['view'],
             'nursing' => 'all',
             'ipd' => ['view'],
-            'beds' => ['view'],
+            'beds' => ['view', 'allocate', 'update'],
             'emergency' => ['view', 'create', 'update'],
             'documents' => ['view'],
         ],
@@ -105,6 +106,7 @@ class RolePermissionSeeder extends Seeder
         Role::OT_STAFF => [
             'ot' => 'all',
             'ipd' => ['view'],
+            'beds' => ['view'],
             'patients' => ['view'],
         ],
         Role::ACCOUNTANT => [

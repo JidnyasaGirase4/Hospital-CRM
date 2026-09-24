@@ -1,9 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import PageLoader from '../../components/PageLoader.vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import apiClient from '../../api/client';
 import PermissionGate from '../../components/PermissionGate.vue';
 import { useUiStore } from '../../stores/ui';
+import PageHero from '../../components/PageHero.vue';
+import SectionCard from '../../components/SectionCard.vue';
+import { formatDate, doctorName } from '../../utils/format';
 
 const ui = useUiStore();
 const route = useRoute();
@@ -41,49 +45,60 @@ async function closeVisit() {
     load();
 }
 
+const vitalEntries = computed(() => Object.entries(visit.value?.vitals || {}).filter(([, v]) => v !== null && v !== ''));
+
 onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <div v-else-if="visit" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-slate-900">{{ visit.patient?.name }} ({{ visit.patient?.mrn }})</h2>
-                <p class="text-sm text-slate-500">Dr. {{ visit.doctor?.name }} · {{ visit.visit_date }} · {{ visit.status }}</p>
+    <PageLoader v-if="loading" />
+    <div v-else-if="visit" class="space-y-5">
+        <PageHero
+            :title="visit.patient?.name ?? 'OPD Visit'"
+            :status="visit.status"
+            :subtitle="`MRN ${visit.patient?.mrn ?? '—'} · ${doctorName(visit.doctor?.name)} · ${formatDate(visit.visit_date)}`"
+            initials
+        >
+            <template #actions>
+                <PermissionGate permission="opd.update">
+                    <button v-if="visit.status !== 'closed'" type="button" class="btn btn-danger-soft" @click="closeVisit">Close Visit</button>
+                </PermissionGate>
+            </template>
+        </PageHero>
+
+        <SectionCard title="Visit Notes">
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div>
+                    <label class="label">Symptoms</label>
+                    <textarea v-model="visit.symptoms" rows="3" class="input"></textarea>
+                </div>
+                <div>
+                    <label class="label">Diagnosis</label>
+                    <textarea v-model="visit.diagnosis" rows="3" class="input"></textarea>
+                </div>
+                <div>
+                    <label class="label">Notes</label>
+                    <textarea v-model="visit.notes" rows="3" class="input"></textarea>
+                </div>
+                <div>
+                    <label class="label">Follow-up date</label>
+                    <input v-model="visit.follow_up_date" type="date" class="input" />
+                </div>
             </div>
             <PermissionGate permission="opd.update">
-                <button v-if="visit.status !== 'closed'" type="button" class="text-sm text-red-600 hover:underline" @click="closeVisit">Close Visit</button>
+                <div class="mt-6 flex justify-end border-t border-slate-100 pt-5">
+                    <button type="button" :disabled="saving" class="btn btn-primary" @click="save">
+                        {{ saving ? 'Saving…' : 'Save Changes' }}
+                    </button>
+                </div>
             </PermissionGate>
-        </div>
+        </SectionCard>
 
-        <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Symptoms</label>
-            <textarea v-model="visit.symptoms" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Diagnosis</label>
-            <textarea v-model="visit.diagnosis" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Notes</label>
-            <textarea v-model="visit.notes" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Follow-up date</label>
-            <input v-model="visit.follow_up_date" type="date" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-        </div>
-        <div v-if="visit.vitals" class="text-sm text-slate-600">
-            <p class="font-medium text-slate-700 mb-1">Vitals</p>
-            <p>{{ Object.entries(visit.vitals).filter(([, v]) => v !== null).map(([k, v]) => `${k}: ${v}`).join(' · ') || '—' }}</p>
-        </div>
-
-        <PermissionGate permission="opd.update">
-            <div class="flex justify-end">
-                <button type="button" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50" @click="save">
-                    {{ saving ? 'Saving…' : 'Save Changes' }}
-                </button>
-            </div>
-        </PermissionGate>
+        <SectionCard v-if="visit.vitals" title="Vitals">
+            <dl v-if="vitalEntries.length" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                <div v-for="[k, v] in vitalEntries" :key="k" class="kv"><dt>{{ k.replace(/_/g, ' ') }}</dt><dd>{{ v }}</dd></div>
+            </dl>
+            <p v-else class="empty-note !py-3">No vitals recorded</p>
+        </SectionCard>
     </div>
 </template>

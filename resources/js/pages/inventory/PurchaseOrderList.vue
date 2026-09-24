@@ -57,10 +57,10 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <RouterLink :to="{ name: 'inventory.hub' }" class="text-sm text-brand-600 hover:underline">← Inventory</RouterLink>
+        <div class="toolbar">
+            <RouterLink :to="{ name: 'inventory.hub' }" class="btn btn-sm btn-soft">← Inventory</RouterLink>
             <PermissionGate permission="inventory.create">
-                <RouterLink :to="{ name: 'purchase-orders.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'purchase-orders.create' }" class="btn btn-primary">
                     + New Purchase Order
                 </RouterLink>
             </PermissionGate>
@@ -69,9 +69,9 @@ watch(page, load);
             <template #actions="{ row }">
                 <PermissionGate permission="inventory.update">
                     <div class="flex gap-2 justify-end text-xs">
-                        <button v-if="row.status === 'draft'" type="button" class="text-brand-600 hover:underline" @click="markOrdered(row)">Mark Ordered</button>
-                        <button v-if="row.status === 'ordered'" type="button" class="text-emerald-600 hover:underline" @click="receive(row)">Receive</button>
-                        <button v-if="row.status === 'draft' || row.status === 'ordered'" type="button" class="text-red-600 hover:underline" @click="cancel(row)">Cancel</button>
+                        <button v-if="row.status === 'draft'" type="button" class="btn btn-sm btn-soft" @click="markOrdered(row)">Mark Ordered</button>
+                        <button v-if="row.status === 'ordered'" type="button" class="btn btn-sm btn-success-soft" @click="receive(row)">Receive</button>
+                        <button v-if="row.status === 'draft' || row.status === 'ordered'" type="button" class="btn btn-sm btn-danger-soft" @click="cancel(row)">Cancel</button>
                     </div>
                 </PermissionGate>
             </template>

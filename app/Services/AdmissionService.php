@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Admission;
+use App\Models\Patient;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AdmissionService
 {
@@ -12,6 +14,21 @@ class AdmissionService
     public function admit(array $data): Admission
     {
         return DB::transaction(function () use ($data) {
+            // Lock the patient row so two concurrent admit requests serialise
+            // and the active-admission check below can't be raced.
+            Patient::query()->lockForUpdate()->findOrFail($data['patient_id']);
+
+            $active = Admission::query()
+                ->where('patient_id', $data['patient_id'])
+                ->where('status', 'admitted')
+                ->exists();
+
+            if ($active) {
+                throw ValidationException::withMessages([
+                    'patient_id' => ['This patient is already admitted. Discharge the current admission before admitting again.'],
+                ]);
+            }
+
             $admission = Admission::create([
                 'patient_id' => $data['patient_id'],
                 'doctor_id' => $data['doctor_id'],

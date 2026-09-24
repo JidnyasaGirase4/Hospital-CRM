@@ -66,7 +66,13 @@ class PharmacySaleController extends Controller
     public function generateBill(PharmacySale $sale)
     {
         $this->authorize('view', $sale);
-        $this->authorize('create', Bill::class);
+
+        // Billing staff can bill any sale; whoever can dispense may also bill
+        // the sale they just made, so the pharmacy counter isn't blocked on
+        // a permission (billing.create) that pharmacists don't hold.
+        if (! request()->user()->can('create', Bill::class)) {
+            $this->authorize('create', PharmacySale::class);
+        }
 
         $bill = $this->billingService->createFromPharmacySale($sale);
 

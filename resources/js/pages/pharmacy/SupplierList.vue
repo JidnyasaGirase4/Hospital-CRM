@@ -49,10 +49,10 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <input v-model="search" type="text" placeholder="Search suppliers…" class="w-64 border border-slate-300 rounded px-3 py-2 text-sm" @keyup.enter="onSearch" />
+        <div class="toolbar">
+            <input v-model="search" type="text" placeholder="Search suppliers…" class="input w-64" @keyup.enter="onSearch" />
             <PermissionGate permission="suppliers.create">
-                <RouterLink :to="{ name: 'suppliers.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'suppliers.create' }" class="btn btn-primary">
                     + New Supplier
                 </RouterLink>
             </PermissionGate>
@@ -61,10 +61,10 @@ watch(page, load);
             <template #actions="{ row }">
                 <div class="flex gap-2 justify-end text-xs">
                     <PermissionGate permission="suppliers.create">
-                        <RouterLink :to="{ name: 'suppliers.edit', params: { id: row.id } }" class="inline-flex items-center bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-200 hover:ring-slate-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors">Edit</RouterLink>
+                        <RouterLink :to="{ name: 'suppliers.edit', params: { id: row.id } }" class="btn btn-sm btn-neutral-soft">Edit</RouterLink>
                     </PermissionGate>
                     <PermissionGate v-if="row.is_active" permission="suppliers.delete">
-                        <button type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="deactivate(row)">Deactivate</button>
+                        <button type="button" class="btn btn-sm btn-danger-soft" @click="deactivate(row)">Deactivate</button>
                     </PermissionGate>
                 </div>
             </template>

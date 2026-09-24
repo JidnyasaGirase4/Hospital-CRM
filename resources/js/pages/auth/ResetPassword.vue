@@ -39,28 +39,28 @@ async function submit() {
                 <h1 class="text-xl font-semibold text-slate-800">Reset Password</h1>
                 <p class="text-sm text-slate-500">Choose a new password</p>
             </div>
-            <div v-if="message" class="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-3 py-2">{{ message }}</div>
-            <div v-if="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{{ error }}</div>
+            <div v-if="message" class="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm font-medium text-emerald-700">{{ message }}</div>
+            <div v-if="error" class="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-700">{{ error }}</div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                <input v-model="form.email" type="email" required class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Email</label>
+                <input v-model="form.email" type="email" required class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Reset token</label>
-                <input v-model="form.token" required class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Reset token</label>
+                <input v-model="form.token" required class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">New password</label>
-                <input v-model="form.password" type="password" required class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">New password</label>
+                <input v-model="form.password" type="password" required class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Confirm new password</label>
-                <input v-model="form.password_confirmation" type="password" required class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Confirm new password</label>
+                <input v-model="form.password_confirmation" type="password" required class="input" />
             </div>
-            <button type="submit" :disabled="saving" class="w-full bg-brand-600 text-white rounded px-3 py-2 text-sm font-medium hover:bg-brand-700 disabled:opacity-50">
+            <button type="submit" :disabled="saving" class="btn btn-primary w-full">
                 {{ saving ? 'Resetting…' : 'Reset Password' }}
             </button>
-            <RouterLink :to="{ name: 'login' }" class="block text-center text-sm text-brand-600 hover:underline">Back to login</RouterLink>
+            <RouterLink :to="{ name: 'login' }" class="link block text-center text-sm">Back to login</RouterLink>
         </form>
     </div>
 </template>

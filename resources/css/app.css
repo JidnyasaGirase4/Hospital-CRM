@@ -1,3 +1,286 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Shared design system. Every page builds on these building blocks (inputs,
+ * buttons, cards, tables) so the whole console looks and behaves the same.
+ * Utilities still win over these classes, so e.g. `input w-64` works.
+ */
+
+@layer base {
+    body {
+        @apply text-slate-800;
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        accent-color: theme('colors.brand.600');
+    }
+
+    ::selection {
+        background: theme('colors.brand.100');
+    }
+}
+
+@layer components {
+    /* ── Form controls ─────────────────────────────────────────────── */
+    .input {
+        @apply block w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-sm transition placeholder:text-slate-400 hover:border-slate-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
+    }
+
+    select.input {
+        @apply cursor-pointer appearance-none pr-9;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 8 5 5 5-5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 1rem;
+    }
+
+    textarea.input {
+        @apply resize-y leading-relaxed;
+    }
+
+    .input-sm {
+        @apply rounded-lg px-2.5 py-1.5;
+    }
+
+    .label {
+        @apply mb-1.5 block text-[13px] font-semibold text-slate-700;
+    }
+
+    .field-error {
+        @apply mt-1 text-xs font-medium text-red-600;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────────────── */
+    .btn {
+        @apply inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+    }
+
+    .btn-sm {
+        @apply gap-1 rounded-lg px-2.5 py-1.5 text-xs;
+    }
+
+    .btn-primary {
+        @apply bg-brand-600 text-white shadow-sm shadow-brand-600/25 hover:bg-brand-700 hover:shadow-md;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-300 bg-white text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white shadow-sm shadow-red-600/25 hover:bg-red-700 hover:shadow-md;
+    }
+
+    .btn-soft {
+        @apply bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-100;
+    }
+
+    .btn-danger-soft {
+        @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100;
+    }
+
+    .btn-success-soft {
+        @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-100;
+    }
+
+    .btn-warn-soft {
+        @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 hover:bg-amber-100;
+    }
+
+    .btn-neutral-soft {
+        @apply bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-200;
+    }
+
+    .link {
+        @apply font-semibold text-brand-600 transition-colors hover:text-brand-700 hover:underline;
+    }
+
+    /* ── Surfaces ──────────────────────────────────────────────────── */
+    .card {
+        @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .card-pad {
+        @apply p-5 sm:p-6;
+    }
+
+    .card-header {
+        @apply flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3.5 sm:px-6;
+    }
+
+    .card-title {
+        @apply text-sm font-bold text-slate-800;
+    }
+
+    .card-body {
+        @apply p-5 sm:p-6;
+    }
+
+    /* Toolbar that sits above list tables: filters left, primary action right. */
+    .toolbar {
+        @apply flex flex-wrap items-center justify-between gap-3;
+    }
+
+    .toolbar-filters {
+        @apply flex flex-1 flex-wrap items-center gap-2.5;
+    }
+
+    /* Big identity block at the top of detail pages. */
+    .hero {
+        @apply card relative overflow-hidden p-5 sm:p-6;
+    }
+
+    .hero::before {
+        content: '';
+        @apply absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-700;
+    }
+
+    .hero-title {
+        @apply text-xl font-extrabold tracking-tight text-slate-900;
+    }
+
+    .hero-sub {
+        @apply mt-1 text-sm text-slate-500;
+    }
+
+    /* Label / value pairs (used inside <dl>). */
+    .kv {
+        @apply rounded-xl bg-slate-50 px-3.5 py-3;
+    }
+
+    .kv dt {
+        @apply text-[11px] font-bold uppercase tracking-wider text-slate-400;
+    }
+
+    .kv dd {
+        @apply mt-0.5 break-words text-sm font-semibold text-slate-800;
+    }
+
+    /* Compact table used inside cards on detail pages. */
+    .table-simple {
+        @apply w-full text-sm;
+    }
+
+    .table-simple thead th {
+        @apply whitespace-nowrap border-b border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500;
+    }
+
+    .table-simple thead th:first-child {
+        @apply rounded-tl-lg;
+    }
+
+    .table-simple thead th:last-child {
+        @apply rounded-tr-lg;
+    }
+
+    .table-simple tbody td {
+        @apply border-b border-slate-100 px-3 py-2.5 text-slate-700;
+    }
+
+    .table-simple tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    .table-simple tbody tr:hover td {
+        @apply bg-slate-50/60;
+    }
+
+    .empty-note {
+        @apply py-8 text-center text-sm text-slate-400;
+    }
+
+    .section-heading {
+        @apply flex items-center gap-2 text-sm font-bold text-slate-700;
+    }
+
+    .section-heading::before {
+        content: '';
+        @apply h-4 w-1.5 rounded-full bg-brand-500;
+    }
+
+    .tab-bar {
+        @apply flex w-fit max-w-full gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1;
+    }
+
+    .tab {
+        @apply whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-semibold capitalize text-slate-500 transition-all hover:text-slate-800;
+    }
+
+    .tab-active {
+        @apply bg-white text-slate-900 shadow-sm;
+    }
+
+    .hub-card {
+        @apply card flex items-start gap-4 p-5 transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md;
+    }
+}
+
+/* ── Printing ────────────────────────────────────────────────────────
+ * The header "Print" button prints whichever page is open. Chrome/Edge's
+ * print dialog offers Save as PDF and every installed printer.
+ */
+@page {
+    margin: 12mm;
+}
+
+@media print {
+    html,
+    body {
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .letterhead {
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #1e293b;
+        padding-bottom: 0.6rem;
+    }
+
+    /* Interactive chrome is meaningless on paper. */
+    .toolbar,
+    .tab-bar,
+    .btn,
+    form button[type='submit'] {
+        display: none !important;
+    }
+
+    .card,
+    .hero,
+    .kv {
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .card {
+        border-color: #cbd5e1;
+    }
+
+    .hero::before {
+        display: none;
+    }
+
+    table {
+        break-inside: auto;
+    }
+
+    tr {
+        break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    .overflow-x-auto {
+        overflow: visible !important;
+    }
+
+    a {
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+}

@@ -56,10 +56,10 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <RouterLink :to="{ name: 'bills.index' }" class="text-sm text-brand-600 hover:underline">← Back to Bills</RouterLink>
+        <div class="toolbar">
+            <RouterLink :to="{ name: 'bills.index' }" class="btn btn-sm btn-soft">← Back to Bills</RouterLink>
             <PermissionGate permission="payments.create">
-                <RouterLink :to="{ name: 'payments.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'payments.create' }" class="btn btn-primary">
                     + Record Payment
                 </RouterLink>
             </PermissionGate>
@@ -73,7 +73,7 @@ watch(page, load);
         >
             <template #actions="{ row }">
                 <PermissionGate permission="payments.refund">
-                    <button v-if="row.status !== 'refunded'" type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="refundPayment(row)">Refund</button>
+                    <button v-if="row.status !== 'refunded'" type="button" class="btn btn-sm btn-danger-soft" @click="refundPayment(row)">Refund</button>
                 </PermissionGate>
             </template>
         </DataTable>

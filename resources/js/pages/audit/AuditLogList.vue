@@ -40,7 +40,7 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <input v-model="action" type="text" placeholder="Filter by action…" class="w-64 border border-slate-300 rounded px-3 py-2 text-sm" @keyup.enter="onFilterChange" />
+        <input v-model="action" type="text" placeholder="Filter by action…" class="input w-64" @keyup.enter="onFilterChange" />
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }" />
     </div>
 </template>

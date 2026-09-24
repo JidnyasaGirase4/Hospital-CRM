@@ -61,18 +61,18 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">New Bill</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">New Bill</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+                <label class="label">Patient</label>
                 <SearchSelect v-model="patientId" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-                <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+                <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Bill type</label>
-                <select v-model="type" class="w-full border border-slate-300 rounded px-3 py-2 text-sm">
+                <label class="label">Bill type</label>
+                <select v-model="type" class="input">
                     <option v-for="t in ['opd', 'ipd', 'pharmacy', 'laboratory', 'radiology', 'ot', 'other']" :key="t" :value="t">{{ t }}</option>
                 </select>
             </div>
@@ -80,26 +80,26 @@ async function submit() {
 
         <div>
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-semibold text-slate-600">Line Items</h3>
-                <button type="button" class="text-brand-600 text-xs hover:underline" @click="addItem">+ Add item</button>
+                <h3 class="card-title mb-3">Line Items</h3>
+                <button type="button" class="btn btn-sm btn-soft" @click="addItem">+ Add item</button>
             </div>
             <div v-for="(item, index) in items" :key="index" class="grid grid-cols-2 sm:grid-cols-6 gap-2 items-start mb-2">
-                <input v-model="item.category" placeholder="Category" class="col-span-1 border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <input v-model="item.description" placeholder="Description" class="col-span-2 border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <input v-model.number="item.quantity" type="number" min="1" placeholder="Qty" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <input v-model.number="item.unit_price" type="number" step="0.01" min="0" placeholder="Unit price" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
+                <input v-model="item.category" placeholder="Category" class="input input-sm col-span-1" />
+                <input v-model="item.description" placeholder="Description" class="input input-sm col-span-2" />
+                <input v-model.number="item.quantity" type="number" min="1" placeholder="Qty" class="input input-sm" />
+                <input v-model.number="item.unit_price" type="number" step="0.01" min="0" placeholder="Unit price" class="input input-sm" />
                 <div class="flex gap-1">
-                    <input v-model.number="item.discount_amount" type="number" step="0.01" min="0" placeholder="Disc." class="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                    <button v-if="items.length > 1" type="button" class="text-red-500 text-xs px-1" @click="removeItem(index)">✕</button>
+                    <input v-model.number="item.discount_amount" type="number" step="0.01" min="0" placeholder="Disc." class="input input-sm" />
+                    <button v-if="items.length > 1" type="button" class="btn btn-sm btn-danger-soft shrink-0 !px-2" title="Remove" aria-label="Remove item" @click="removeItem(index)">✕</button>
                 </div>
             </div>
-            <p v-if="errors.items" class="text-xs text-red-600 mt-1">{{ errors.items[0] }}</p>
+            <p v-if="errors.items" class="field-error">{{ errors.items[0] }}</p>
             <p class="text-right text-sm font-medium text-slate-700 mt-2">Estimated total: {{ total.toFixed(2) }}</p>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'bills.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'bills.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Create Bill' }}
             </button>
         </div>

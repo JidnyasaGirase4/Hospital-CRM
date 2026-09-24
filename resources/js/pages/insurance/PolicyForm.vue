@@ -43,49 +43,49 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">New Insurance Policy</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">New Insurance Policy</h2>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="form.patient_id" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-            <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+            <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Insurance company</label>
-            <select v-model="form.insurance_company_id" class="w-full border border-slate-300 rounded px-3 py-2 text-sm">
+            <label class="label">Insurance company</label>
+            <select v-model="form.insurance_company_id" class="input">
                 <option value="">Select…</option>
                 <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
             </select>
-            <p v-if="errors.insurance_company_id" class="text-xs text-red-600 mt-1">{{ errors.insurance_company_id[0] }}</p>
+            <p v-if="errors.insurance_company_id" class="field-error">{{ errors.insurance_company_id[0] }}</p>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Policy number</label>
-            <input v-model="form.policy_number" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.policy_number" class="text-xs text-red-600 mt-1">{{ errors.policy_number[0] }}</p>
+            <label class="label">Policy number</label>
+            <input v-model="form.policy_number" class="input" />
+            <p v-if="errors.policy_number" class="field-error">{{ errors.policy_number[0] }}</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Valid from</label>
-                <input v-model="form.valid_from" type="date" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Valid from</label>
+                <input v-model="form.valid_from" type="date" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Valid till</label>
-                <input v-model="form.valid_till" type="date" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Valid till</label>
+                <input v-model="form.valid_till" type="date" class="input" />
             </div>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Coverage amount</label>
-            <input v-model.number="form.coverage_amount" type="number" step="0.01" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+            <label class="label">Coverage amount</label>
+            <input v-model.number="form.coverage_amount" type="number" step="0.01" class="input" />
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'insurance-policies.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'insurance-policies.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

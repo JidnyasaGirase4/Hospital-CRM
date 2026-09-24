@@ -25,6 +25,7 @@ import RoleForm from '../pages/users/RoleForm.vue';
 import BillList from '../pages/billing/BillList.vue';
 import BillForm from '../pages/billing/BillForm.vue';
 import BillDetail from '../pages/billing/BillDetail.vue';
+import PatientReport from '../pages/patients/PatientReport.vue';
 import PaymentList from '../pages/billing/PaymentList.vue';
 import PaymentForm from '../pages/billing/PaymentForm.vue';
 
@@ -113,6 +114,7 @@ const readyChildren = [
     { path: 'billing', name: 'bills.index', component: BillList, meta: { permission: 'billing.view', title: 'Billing' } },
     { path: 'billing/new', name: 'bills.create', component: BillForm, meta: { permission: 'billing.create', title: 'New Bill' } },
     { path: 'billing/:id', name: 'bills.show', component: BillDetail, props: true, meta: { permission: 'billing.view', title: 'Bill Detail' } },
+    { path: 'patients/:id/report', name: 'patients.report', component: PatientReport, props: true, meta: { permission: 'patients.view', title: 'Complete Patient Report' } },
     { path: 'billing/payments', name: 'payments.index', component: PaymentList, meta: { permission: 'payments.view', title: 'Payments' } },
     { path: 'billing/payments/new', name: 'payments.create', component: PaymentForm, meta: { permission: 'payments.create', title: 'Record Payment' } },
 

@@ -78,45 +78,45 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">{{ isEdit ? 'Edit User' : 'New User' }}</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">{{ isEdit ? 'Edit User' : 'New User' }}</h2>
         <p v-if="loadError" class="text-sm text-red-600">{{ loadError }}</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                <input v-model="form.name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.name" class="text-xs text-red-600 mt-1">{{ errors.name[0] }}</p>
+                <label class="label">Name</label>
+                <input v-model="form.name" class="input" />
+                <p v-if="errors.name" class="field-error">{{ errors.name[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Employee code</label>
-                <input v-model="form.employee_code" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.employee_code" class="text-xs text-red-600 mt-1">{{ errors.employee_code[0] }}</p>
+                <label class="label">Employee code</label>
+                <input v-model="form.employee_code" class="input" />
+                <p v-if="errors.employee_code" class="field-error">{{ errors.employee_code[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                <input v-model="form.email" type="email" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.email" class="text-xs text-red-600 mt-1">{{ errors.email[0] }}</p>
+                <label class="label">Email</label>
+                <input v-model="form.email" type="email" class="input" />
+                <p v-if="errors.email" class="field-error">{{ errors.email[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Mobile</label>
-                <input v-model="form.mobile" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Mobile</label>
+                <input v-model="form.mobile" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Department ID</label>
-                <input v-model="form.department_id" type="number" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Department ID</label>
+                <input v-model="form.department_id" type="number" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">{{ isEdit ? 'New password (optional)' : 'Password' }}</label>
-                <input v-model="form.password" type="password" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.password" class="text-xs text-red-600 mt-1">{{ errors.password[0] }}</p>
+                <label class="label">{{ isEdit ? 'New password (optional)' : 'Password' }}</label>
+                <input v-model="form.password" type="password" class="input" />
+                <p v-if="errors.password" class="field-error">{{ errors.password[0] }}</p>
             </div>
         </div>
 
         <div v-if="!isEdit || roles.length">
-            <h3 class="text-sm font-semibold text-slate-600 mb-2">Roles</h3>
+            <h3 class="card-title mb-3">Roles</h3>
             <div class="flex flex-wrap gap-3">
-                <label v-for="role in roles" :key="role.id" class="flex items-center gap-2 text-sm border border-slate-200 rounded px-3 py-1.5">
+                <label v-for="role in roles" :key="role.id" class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-brand-300 hover:bg-brand-50/50">
                     <input type="checkbox" :value="role.id" v-model="form.role_ids" />
                     {{ role.name }}
                 </label>
@@ -128,9 +128,9 @@ async function submit() {
             <label for="is_active" class="text-sm text-slate-700">Active</label>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'users.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'users.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

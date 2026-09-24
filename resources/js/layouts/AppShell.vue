@@ -13,6 +13,14 @@ const ui = useUiStore();
 const route = useRoute();
 const router = useRouter();
 
+// Bills and the patient report ship their own print layout (with letterhead).
+const ownPrintLayout = computed(() => ['bills.show', 'patients.report'].includes(route.name));
+const printedAt = computed(() => new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }));
+
+function printPage() {
+    window.print();
+}
+
 function goBack() {
     if (window.history.state?.back) {
         router.back();
@@ -68,14 +76,23 @@ const groupedModules = computed(() => {
 watch(() => route.fullPath, () => {
     ui.sidebarOpen = false;
 });
+
+// The browser uses the page title as the default file name for "Save as PDF".
+watch(
+    () => route.meta.title,
+    (title) => {
+        document.title = title ? `${title} - Hospital CRM` : 'Hospital CRM';
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
-    <div class="h-screen flex bg-slate-100 overflow-hidden">
-        <div v-if="ui.sidebarOpen" class="fixed inset-0 bg-slate-900/50 z-30 md:hidden" @click="ui.sidebarOpen = false"></div>
+    <div class="h-screen flex bg-slate-100 overflow-hidden print:block print:h-auto print:overflow-visible print:bg-white">
+        <div v-if="ui.sidebarOpen" class="fixed inset-0 bg-slate-900/50 z-30 md:hidden print:hidden" @click="ui.sidebarOpen = false"></div>
 
         <aside
-            class="fixed md:static inset-y-0 left-0 z-40 w-72 shrink-0 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-200 md:translate-x-0"
+            class="print:hidden fixed md:static inset-y-0 left-0 z-40 w-72 shrink-0 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-200 md:translate-x-0"
             :class="ui.sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
         >
             <div class="px-5 py-5 flex items-center gap-3 border-b border-slate-100">
@@ -114,8 +131,8 @@ watch(() => route.fullPath, () => {
             </div>
         </aside>
 
-        <div class="flex-1 flex flex-col min-w-0 min-h-0">
-            <header class="h-16 shrink-0 border-b border-slate-200 bg-white/80 backdrop-blur flex items-center gap-3 px-4 md:px-6 z-20">
+        <div class="flex-1 flex flex-col min-w-0 min-h-0 print:block">
+            <header class="print:hidden h-16 shrink-0 border-b border-slate-200 bg-white/80 backdrop-blur flex items-center gap-3 px-4 md:px-6 z-20">
                 <button type="button" class="md:hidden text-slate-500 hover:text-slate-800" aria-label="Open menu" @click="ui.sidebarOpen = true">
                     <Icon name="menu" :size="24" />
                 </button>
@@ -133,6 +150,15 @@ watch(() => route.fullPath, () => {
                     <Breadcrumbs />
                     <h1 class="text-base font-semibold text-slate-800 truncate">{{ $route.meta.title || 'Hospital CRM' }}</h1>
                 </div>
+                <button
+                    v-if="route.meta.title"
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    title="Print or save this page as PDF"
+                    @click="printPage"
+                >
+                    <Icon name="print" :size="16" /> <span class="hidden sm:inline">Print</span>
+                </button>
                 <RouterLink
                     :to="{ name: 'notifications.index' }"
                     class="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:bg-orange-50 hover:text-orange-600 transition-colors"
@@ -141,7 +167,16 @@ watch(() => route.fullPath, () => {
                     <Icon name="bell" :size="20" />
                 </RouterLink>
             </header>
-            <main class="flex-1 min-h-0 overflow-y-auto p-4 md:p-6">
+            <main class="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 print:overflow-visible print:p-0">
+                <div v-if="!ownPrintLayout" class="letterhead hidden print:block">
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-2xl font-extrabold text-slate-900">Hospital CRM</p>
+                            <p class="text-sm font-semibold text-slate-600">{{ route.meta.title }}</p>
+                        </div>
+                        <p class="text-right text-xs text-slate-500">Printed {{ printedAt }}<br />by {{ auth.user?.name }}</p>
+                    </div>
+                </div>
                 <RouterView />
             </main>
         </div>

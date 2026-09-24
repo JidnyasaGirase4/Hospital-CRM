@@ -80,51 +80,51 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">{{ isEdit ? 'Edit Medicine' : 'New Medicine' }}</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">{{ isEdit ? 'Edit Medicine' : 'New Medicine' }}</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                <input v-model="form.name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.name" class="text-xs text-red-600 mt-1">{{ errors.name[0] }}</p>
+                <label class="label">Name</label>
+                <input v-model="form.name" class="input" />
+                <p v-if="errors.name" class="field-error">{{ errors.name[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Generic name</label>
-                <input v-model="form.generic_name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Generic name</label>
+                <input v-model="form.generic_name" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                <label class="label">Category</label>
                 <div class="flex gap-2">
-                    <select v-model="form.medicine_category_id" class="w-full border border-slate-300 rounded px-3 py-2 text-sm">
+                    <select v-model="form.medicine_category_id" class="input">
                         <option value="">—</option>
                         <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
                     </select>
                 </div>
                 <div class="flex gap-2 mt-1">
-                    <input v-model="newCategoryName" placeholder="New category…" class="flex-1 border border-slate-300 rounded px-2 py-1 text-xs" />
+                    <input v-model="newCategoryName" placeholder="New category…" class="input input-sm flex-1" />
                     <button type="button" class="text-xs text-brand-600" @click="addCategory">Add</button>
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Manufacturer</label>
-                <input v-model="form.manufacturer" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Manufacturer</label>
+                <input v-model="form.manufacturer" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Form (tablet/syrup…)</label>
-                <input v-model="form.form" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Form (tablet/syrup…)</label>
+                <input v-model="form.form" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Strength</label>
-                <input v-model="form.strength" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Strength</label>
+                <input v-model="form.strength" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
-                <input v-model="form.unit" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Unit</label>
+                <input v-model="form.unit" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Reorder level</label>
-                <input v-model.number="form.reorder_level" type="number" min="0" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Reorder level</label>
+                <input v-model.number="form.reorder_level" type="number" min="0" class="input" />
             </div>
         </div>
 
@@ -138,10 +138,10 @@ async function submit() {
         </div>
 
         <div v-if="isEdit && batches.length">
-            <h3 class="text-sm font-semibold text-slate-600 mb-2">Batches</h3>
-            <table class="w-full text-sm">
-                <thead class="text-left text-slate-500"><tr><th>Batch #</th><th>Qty</th><th>Expiry</th><th>MRP</th></tr></thead>
-                <tbody class="divide-y divide-slate-100">
+            <h3 class="card-title mb-3">Batches</h3>
+            <table class="table-simple">
+                <thead><tr><th>Batch #</th><th>Qty</th><th>Expiry</th><th>MRP</th></tr></thead>
+                <tbody>
                     <tr v-for="b in batches" :key="b.id" :class="{ 'text-red-600': b.is_expired }">
                         <td class="py-1">{{ b.batch_number }}</td>
                         <td>{{ b.quantity }}</td>
@@ -152,9 +152,9 @@ async function submit() {
             </table>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'medicines.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'medicines.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

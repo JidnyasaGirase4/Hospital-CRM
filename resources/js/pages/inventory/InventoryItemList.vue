@@ -76,30 +76,30 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <RouterLink :to="{ name: 'inventory.hub' }" class="text-sm text-brand-600 hover:underline">← Inventory</RouterLink>
-                <input v-model="search" type="text" placeholder="Search items…" class="w-56 border border-slate-300 rounded px-3 py-2 text-sm" @keyup.enter="onSearch" />
+        <div class="toolbar">
+            <div class="toolbar-filters">
+                <RouterLink :to="{ name: 'inventory.hub' }" class="btn btn-sm btn-soft">← Inventory</RouterLink>
+                <input v-model="search" type="text" placeholder="Search items…" class="input w-56" @keyup.enter="onSearch" />
             </div>
             <PermissionGate permission="inventory.create">
-                <button type="button" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all" @click="showForm = !showForm">
+                <button type="button" class="btn btn-primary" @click="showForm = !showForm">
                     {{ showForm ? 'Cancel' : '+ New Item' }}
                 </button>
             </PermissionGate>
         </div>
-        <form v-if="showForm" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 grid grid-cols-2 sm:grid-cols-4 gap-2" @submit.prevent="addItem">
-            <input v-model="form.name" placeholder="Item name" required class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-            <input v-model="form.category" placeholder="Category" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-            <input v-model="form.unit" placeholder="Unit" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
+        <form v-if="showForm" class="card p-4 grid grid-cols-2 sm:grid-cols-4 gap-2" @submit.prevent="addItem">
+            <input v-model="form.name" placeholder="Item name" required class="input input-sm" />
+            <input v-model="form.category" placeholder="Category" class="input input-sm" />
+            <input v-model="form.unit" placeholder="Unit" class="input input-sm" />
             <div class="flex gap-2">
-                <input v-model.number="form.reorder_level" type="number" min="0" placeholder="Reorder level" class="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <button type="submit" class="bg-brand-600 text-white rounded text-sm px-3">Add</button>
+                <input v-model.number="form.reorder_level" type="number" min="0" placeholder="Reorder level" class="input input-sm" />
+                <button type="submit" class="btn btn-primary btn-sm">Add</button>
             </div>
         </form>
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }">
             <template #actions="{ row }">
                 <PermissionGate permission="inventory.update">
-                    <button type="button" class="inline-flex items-center bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-100 hover:ring-brand-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="recordTransaction(row)">Adjust Stock</button>
+                    <button type="button" class="btn btn-sm btn-soft" @click="recordTransaction(row)">Adjust Stock</button>
                 </PermissionGate>
             </template>
         </DataTable>

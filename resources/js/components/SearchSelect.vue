@@ -48,18 +48,18 @@ function select(item) {
             v-model="query"
             type="text"
             :placeholder="placeholder"
-            class="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+            class="input"
             @input="onInput"
             @focus="open = results.length > 0"
         />
         <ul
             v-if="open && results.length"
-            class="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded shadow max-h-56 overflow-y-auto"
+            class="absolute z-20 mt-1.5 max-h-60 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl ring-1 ring-slate-900/5"
         >
             <li
                 v-for="item in results"
                 :key="item.id"
-                class="px-3 py-2 text-sm hover:bg-slate-100 cursor-pointer"
+                class="cursor-pointer px-3.5 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-700"
                 @click="select(item)"
             >{{ item.label }}</li>
         </ul>

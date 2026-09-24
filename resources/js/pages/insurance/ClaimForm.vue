@@ -44,38 +44,38 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">Submit Insurance Claim</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">Submit Insurance Claim</h2>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="patientId" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Policy</label>
-            <select v-model="form.insurance_policy_id" :disabled="!patientId" class="w-full border border-slate-300 rounded px-3 py-2 text-sm disabled:bg-slate-100">
+            <label class="label">Policy</label>
+            <select v-model="form.insurance_policy_id" :disabled="!patientId" class="input">
                 <option value="">{{ patientId ? 'Select…' : 'Select a patient first' }}</option>
                 <option v-for="p in policies" :key="p.id" :value="p.id">{{ p.policy_number }} ({{ p.insurance_company?.name }})</option>
             </select>
             <p v-if="patientId && policies.length === 0" class="text-xs text-slate-400 mt-1">This patient has no insurance policies yet.</p>
-            <p v-if="errors.insurance_policy_id" class="text-xs text-red-600 mt-1">{{ errors.insurance_policy_id[0] }}</p>
+            <p v-if="errors.insurance_policy_id" class="field-error">{{ errors.insurance_policy_id[0] }}</p>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Bill ID (optional)</label>
-            <input v-model.number="form.bill_id" type="number" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+            <label class="label">Bill ID (optional)</label>
+            <input v-model.number="form.bill_id" type="number" class="input" />
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Requested amount</label>
-            <input v-model.number="form.requested_amount" type="number" step="0.01" min="0.01" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.requested_amount" class="text-xs text-red-600 mt-1">{{ errors.requested_amount[0] }}</p>
+            <label class="label">Requested amount</label>
+            <input v-model.number="form.requested_amount" type="number" step="0.01" min="0.01" class="input" />
+            <p v-if="errors.requested_amount" class="field-error">{{ errors.requested_amount[0] }}</p>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'insurance-claims.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'insurance-claims.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Submit' }}
             </button>
         </div>

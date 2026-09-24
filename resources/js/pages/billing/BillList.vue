@@ -57,20 +57,20 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div class="flex gap-3">
-                <select v-model="type" class="border border-slate-300 rounded px-3 py-2 text-sm" @change="onFilterChange">
+        <div class="toolbar">
+            <div class="toolbar-filters">
+                <select v-model="type" class="input w-auto" @change="onFilterChange">
                     <option value="">All types</option>
                     <option v-for="t in ['opd', 'ipd', 'pharmacy', 'laboratory', 'radiology', 'ot', 'other']" :key="t" :value="t">{{ t }}</option>
                 </select>
-                <select v-model="status" class="border border-slate-300 rounded px-3 py-2 text-sm" @change="onFilterChange">
+                <select v-model="status" class="input w-auto" @change="onFilterChange">
                     <option value="">All statuses</option>
                     <option v-for="s in ['unpaid', 'partially-paid', 'paid', 'cancelled']" :key="s" :value="s">{{ s }}</option>
                 </select>
-                <RouterLink :to="{ name: 'payments.index' }" class="text-sm text-brand-600 hover:underline self-center">View Payments →</RouterLink>
+                <RouterLink :to="{ name: 'payments.index' }" class="btn btn-sm btn-soft">View Payments →</RouterLink>
             </div>
             <PermissionGate permission="billing.create">
-                <RouterLink :to="{ name: 'bills.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'bills.create' }" class="btn btn-primary">
                     + New Bill
                 </RouterLink>
             </PermissionGate>
@@ -83,11 +83,13 @@ watch(page, load);
             @page-change="(p) => { page = p; }"
         >
             <template #cell-bill_number="{ row }">
-                <RouterLink :to="{ name: 'bills.show', params: { id: row.id } }" class="text-brand-600 hover:underline">{{ row.bill_number }}</RouterLink>
+                <RouterLink :to="{ name: 'bills.show', params: { id: row.id } }" class="link">{{ row.bill_number }}</RouterLink>
             </template>
             <template #actions="{ row }">
+                <RouterLink :to="{ name: 'bills.show', params: { id: row.id } }" class="btn btn-sm btn-soft mr-1.5">View</RouterLink>
+                <RouterLink v-if="row.patient?.id" :to="{ name: 'patients.report', params: { id: row.patient.id } }" class="btn btn-sm btn-neutral-soft mr-1.5" title="Complete report for this patient (stay, medicines, tests, bills)">Report</RouterLink>
                 <PermissionGate permission="billing.update">
-                    <button v-if="row.status !== 'cancelled'" type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="cancelBill(row)">Cancel</button>
+                    <button v-if="row.status !== 'cancelled'" type="button" class="btn btn-sm btn-danger-soft" @click="cancelBill(row)">Cancel</button>
                 </PermissionGate>
             </template>
         </DataTable>

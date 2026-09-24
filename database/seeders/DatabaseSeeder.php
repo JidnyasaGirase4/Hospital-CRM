@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $superAdmin = User::query()->updateOrCreate(
-            ['email' => 'admin@hospital-crm.test'],
+            ['employee_code' => 'EMP-0001'],
             [
                 'name' => 'Super Admin',
-                'employee_code' => 'EMP-0001',
+                'email' => 'admin@gmail.com',
                 'password' => 'password',
                 'is_active' => true,
             ]

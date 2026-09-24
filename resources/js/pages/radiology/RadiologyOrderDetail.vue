@@ -1,8 +1,13 @@
 <script setup>
+import PageLoader from '../../components/PageLoader.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import apiClient from '../../api/client';
 import PermissionGate from '../../components/PermissionGate.vue';
+import PageHero from '../../components/PageHero.vue';
+import SectionCard from '../../components/SectionCard.vue';
+import Badge from '../../components/Badge.vue';
+import { doctorName } from '../../utils/format';
 
 const route = useRoute();
 const order = ref(null);
@@ -40,38 +45,46 @@ onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <div v-else-if="order" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-slate-900">{{ order.patient?.name }} ({{ order.patient?.mrn }})</h2>
-                <p class="text-sm text-slate-500">{{ order.test?.name }} ({{ order.test?.modality }}) · Dr. {{ order.doctor?.name }} · {{ order.status }}</p>
-            </div>
-            <PermissionGate permission="radiology.update">
-                <button v-if="order.status === 'ordered'" type="button" class="text-sm text-brand-600 hover:underline" @click="schedule">Schedule</button>
-            </PermissionGate>
-        </div>
+    <PageLoader v-if="loading" />
+    <div v-else-if="order" class="space-y-5">
+        <PageHero
+            :title="order.patient?.name ?? 'Radiology Order'"
+            :status="order.status"
+            :subtitle="`${order.test?.name ?? 'Test'} (${order.test?.modality ?? '—'}) · ${doctorName(order.doctor?.name)} · MRN ${order.patient?.mrn ?? '—'}`"
+            initials
+        >
+            <template #actions>
+                <PermissionGate permission="radiology.update">
+                    <button v-if="order.status === 'ordered'" type="button" class="btn btn-primary" @click="schedule">Schedule</button>
+                </PermissionGate>
+            </template>
+        </PageHero>
 
-        <div v-if="order.report" class="border border-slate-200 rounded p-4 space-y-2">
-            <h3 class="font-medium text-slate-800">Report {{ order.report.is_approved ? '(Approved)' : '(Pending Approval)' }}</h3>
-            <p class="text-sm text-slate-600"><span class="text-slate-400">Findings:</span> {{ order.report.findings || '—' }}</p>
-            <p class="text-sm text-slate-600"><span class="text-slate-400">Impression:</span> {{ order.report.impression || '—' }}</p>
+        <SectionCard v-if="order.report" title="Report">
+            <template #actions><Badge :value="order.report.is_approved ? 'approved' : 'pending'" /></template>
+            <dl class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div class="kv"><dt>Findings</dt><dd class="whitespace-pre-line font-medium">{{ order.report.findings || '—' }}</dd></div>
+                <div class="kv"><dt>Impression</dt><dd class="whitespace-pre-line font-medium">{{ order.report.impression || '—' }}</dd></div>
+            </dl>
             <PermissionGate permission="radiology.update">
-                <button v-if="!order.report.is_approved" type="button" class="inline-flex items-center bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-100 hover:ring-emerald-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="approveReport">Approve Report</button>
+                <button v-if="!order.report.is_approved" type="button" class="btn btn-success-soft mt-4" @click="approveReport">Approve Report</button>
             </PermissionGate>
-        </div>
+        </SectionCard>
 
         <PermissionGate permission="radiology.update">
-            <div v-if="order.status === 'scheduled' || order.status === 'ordered'">
-                <button type="button" class="text-brand-600 text-sm hover:underline" @click="showReportForm = !showReportForm">
-                    {{ showReportForm ? 'Cancel' : (order.report ? 'Edit Report' : '+ Submit Report') }}
-                </button>
-                <form v-if="showReportForm" class="mt-3 space-y-2" @submit.prevent="submitReport">
-                    <textarea v-model="reportForm.findings" rows="2" placeholder="Findings" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
-                    <textarea v-model="reportForm.impression" rows="2" placeholder="Impression" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
-                    <button type="submit" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">Submit</button>
+            <SectionCard v-if="order.status === 'scheduled' || order.status === 'ordered'" :title="order.report ? 'Edit Report' : 'Submit Report'">
+                <template #actions>
+                    <button type="button" class="btn btn-sm btn-soft" @click="showReportForm = !showReportForm">
+                        {{ showReportForm ? 'Cancel' : (order.report ? 'Edit Report' : '+ Submit Report') }}
+                    </button>
+                </template>
+                <form v-if="showReportForm" class="space-y-4" @submit.prevent="submitReport">
+                    <div><label class="label">Findings</label><textarea v-model="reportForm.findings" rows="3" placeholder="Findings" class="input"></textarea></div>
+                    <div><label class="label">Impression</label><textarea v-model="reportForm.impression" rows="3" placeholder="Impression" class="input"></textarea></div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
-            </div>
+                <p v-else class="text-sm text-slate-500">Use the button above to write or update the radiology report.</p>
+            </SectionCard>
         </PermissionGate>
     </div>
 </template>

@@ -1,9 +1,14 @@
 <script setup>
+import PageLoader from '../../components/PageLoader.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import apiClient from '../../api/client';
 import PermissionGate from '../../components/PermissionGate.vue';
 import { useUiStore } from '../../stores/ui';
+import PageHero from '../../components/PageHero.vue';
+import SectionCard from '../../components/SectionCard.vue';
+import Icon from '../../components/Icon.vue';
+import { formatMoney } from '../../utils/format';
 
 const ui = useUiStore();
 const route = useRoute();
@@ -52,40 +57,52 @@ onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <div v-else-if="sale" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-slate-900">{{ sale.invoice_number }}</h2>
-                <p class="text-sm text-slate-500">{{ sale.patient?.name || 'Walk-in' }} · {{ sale.status }} · {{ sale.payment_status }}</p>
-            </div>
-            <PermissionGate permission="billing.create">
-                <button type="button" class="text-sm text-brand-600 hover:underline" @click="generateBill">Generate Bill</button>
-            </PermissionGate>
+    <PageLoader v-if="loading" />
+    <div v-else-if="sale" class="space-y-5">
+        <PageHero
+            :title="sale.invoice_number"
+            :status="sale.status"
+            :subtitle="`${sale.patient?.name || 'Walk-in customer'} · Payment: ${sale.payment_status}`"
+        >
+            <template #actions>
+                <PermissionGate permission="pharmacy.dispense">
+                    <button type="button" class="btn btn-primary" @click="generateBill"><Icon name="banknote" :size="16" /> Generate Bill</button>
+                </PermissionGate>
+            </template>
+        </PageHero>
+
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <SectionCard title="Items" :count="sale.items?.length ?? 0" flush class="lg:col-span-2">
+                <div class="overflow-x-auto px-3 pb-3 pt-2">
+                    <table class="table-simple">
+                        <thead><tr><th>Medicine</th><th>Batch</th><th class="text-right">Qty</th><th class="text-right">Unit Price</th><th class="text-right">Total</th><th class="text-right">Actions</th></tr></thead>
+                        <tbody>
+                            <tr v-for="item in sale.items" :key="item.id">
+                                <td class="font-medium text-slate-800">{{ item.medicine?.name }}</td>
+                                <td>{{ item.batch_number }}</td>
+                                <td class="text-right tabular-nums">{{ item.quantity }}</td>
+                                <td class="text-right tabular-nums">{{ formatMoney(item.unit_price) }}</td>
+                                <td class="text-right font-semibold tabular-nums text-slate-900">{{ formatMoney(item.total_price) }}</td>
+                                <td class="text-right">
+                                    <PermissionGate permission="pharmacy.return">
+                                        <button type="button" class="btn btn-sm btn-danger-soft" @click="returnItem(item)">Return</button>
+                                    </PermissionGate>
+                                </td>
+                            </tr>
+                            <tr v-if="!sale.items?.length"><td colspan="6" class="empty-note">No items</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </SectionCard>
+
+            <section class="card h-fit overflow-hidden">
+                <header class="card-header"><h3 class="card-title">Sale Summary</h3></header>
+                <dl class="space-y-2.5 p-5 text-sm">
+                    <div class="flex justify-between"><dt class="text-slate-500">Discount</dt><dd class="font-medium tabular-nums text-emerald-600">- {{ formatMoney(sale.discount_amount) }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-slate-500">Tax</dt><dd class="font-medium tabular-nums">{{ formatMoney(sale.tax_amount) }}</dd></div>
+                    <div class="flex justify-between border-t border-slate-200 pt-3 text-base"><dt class="font-bold text-slate-800">Net Amount</dt><dd class="font-extrabold tabular-nums text-slate-900">{{ formatMoney(sale.net_amount) }}</dd></div>
+                </dl>
+            </section>
         </div>
-
-        <table class="w-full text-sm">
-            <thead class="text-left text-slate-500"><tr><th class="py-1">Medicine</th><th>Batch</th><th>Qty</th><th>Unit Price</th><th>Total</th><th class="text-right">Actions</th></tr></thead>
-            <tbody class="divide-y divide-slate-100">
-                <tr v-for="item in sale.items" :key="item.id">
-                    <td class="py-1.5">{{ item.medicine?.name }}</td>
-                    <td>{{ item.batch_number }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.unit_price }}</td>
-                    <td>{{ item.total_price }}</td>
-                    <td class="text-right">
-                        <PermissionGate permission="pharmacy.return">
-                            <button type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="returnItem(item)">Return</button>
-                        </PermissionGate>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div><dt class="text-slate-400">Discount</dt><dd>{{ sale.discount_amount }}</dd></div>
-            <div><dt class="text-slate-400">Tax</dt><dd>{{ sale.tax_amount }}</dd></div>
-            <div><dt class="text-slate-400">Net Amount</dt><dd class="font-semibold">{{ sale.net_amount }}</dd></div>
-        </dl>
     </div>
 </template>

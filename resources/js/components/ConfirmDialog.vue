@@ -7,13 +7,13 @@ const ui = useUiStore();
 
 <template>
     <Modal v-if="ui.confirmState" :title="ui.confirmState.title" @close="ui.resolveConfirm(false)">
-        <p class="text-sm text-slate-600 mb-5 whitespace-pre-line">{{ ui.confirmState.message }}</p>
+        <p class="mb-6 whitespace-pre-line text-sm leading-relaxed text-slate-600">{{ ui.confirmState.message }}</p>
         <div class="flex justify-end gap-3">
-            <button type="button" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900" @click="ui.resolveConfirm(false)">Cancel</button>
+            <button type="button" class="btn btn-secondary" @click="ui.resolveConfirm(false)">Cancel</button>
             <button
                 type="button"
-                class="px-4 py-2 text-sm text-white rounded"
-                :class="ui.confirmState.danger ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'"
+                class="btn"
+                :class="ui.confirmState.danger ? 'btn-danger' : 'btn-primary'"
                 @click="ui.resolveConfirm(true)"
             >{{ ui.confirmState.confirmLabel }}</button>
         </div>

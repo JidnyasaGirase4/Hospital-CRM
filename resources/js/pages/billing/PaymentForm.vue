@@ -52,40 +52,40 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">Record Payment</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">Record Payment</h2>
 
         <div v-if="!route.query.patient_id">
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="form.patient_id" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-            <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+            <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
         </div>
         <div v-if="form.bill_id">
-            <label class="block text-sm font-medium text-slate-700 mb-1">Bill ID</label>
-            <input v-model.number="form.bill_id" type="number" class="w-full border border-slate-300 rounded px-3 py-2 text-sm bg-slate-100" readonly />
+            <label class="label">Bill ID</label>
+            <input v-model.number="form.bill_id" type="number" class="input bg-slate-100" readonly />
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Amount</label>
-            <input v-model.number="form.amount" type="number" step="0.01" min="0.01" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-            <p v-if="errors.amount" class="text-xs text-red-600 mt-1">{{ errors.amount[0] }}</p>
+            <label class="label">Amount</label>
+            <input v-model.number="form.amount" type="number" step="0.01" min="0.01" class="input" />
+            <p v-if="errors.amount" class="field-error">{{ errors.amount[0] }}</p>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Method</label>
-            <select v-model="form.method" class="w-full border border-slate-300 rounded px-3 py-2 text-sm">
+            <label class="label">Method</label>
+            <select v-model="form.method" class="input">
                 <option v-for="m in ['cash', 'card', 'upi', 'bank-transfer', 'cheque', 'insurance', 'tpa']" :key="m" :value="m">{{ m }}</option>
             </select>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Reference number</label>
-            <input v-model="form.reference_number" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+            <label class="label">Reference number</label>
+            <input v-model="form.reference_number" class="input" />
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'payments.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'payments.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Record Payment' }}
             </button>
         </div>

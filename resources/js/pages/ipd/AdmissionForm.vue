@@ -17,12 +17,12 @@ async function fetchPatients(q) {
 }
 
 async function fetchDoctors(q) {
-    const { data } = await apiClient.get('/users', { params: { search: q, per_page: 10 } });
+    const { data } = await apiClient.get('/lookups/staff', { params: { search: q } });
     return data.data.map((u) => ({ id: u.id, label: u.name }));
 }
 
 onMounted(async () => {
-    const { data } = await apiClient.get('/beds', { params: { status: 'available' } });
+    const { data } = await apiClient.get('/lookups/beds');
     availableBeds.value = data.data;
 });
 
@@ -41,38 +41,38 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">New Admission</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">New Admission</h2>
 
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+            <label class="label">Patient</label>
             <SearchSelect v-model="form.patient_id" :fetcher="fetchPatients" placeholder="Search patient by name/MRN…" />
-            <p v-if="errors.patient_id" class="text-xs text-red-600 mt-1">{{ errors.patient_id[0] }}</p>
+            <p v-if="errors.patient_id" class="field-error">{{ errors.patient_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Doctor</label>
+            <label class="label">Doctor</label>
             <SearchSelect v-model="form.doctor_id" :fetcher="fetchDoctors" placeholder="Search staff by name…" />
-            <p v-if="errors.doctor_id" class="text-xs text-red-600 mt-1">{{ errors.doctor_id[0] }}</p>
+            <p v-if="errors.doctor_id" class="field-error">{{ errors.doctor_id[0] }}</p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Admission type</label>
-            <input v-model="form.admission_type" placeholder="e.g. Planned, Emergency" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+            <label class="label">Admission type</label>
+            <input v-model="form.admission_type" placeholder="e.g. Planned, Emergency" class="input" />
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Reason</label>
-            <textarea v-model="form.reason" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
+            <label class="label">Reason</label>
+            <textarea v-model="form.reason" rows="2" class="input"></textarea>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Bed (optional — allocate now)</label>
-            <select v-model="form.bed_id" class="w-full border border-slate-300 rounded px-3 py-2 text-sm">
+            <label class="label">Bed (optional — allocate now)</label>
+            <select v-model="form.bed_id" class="input">
                 <option value="">Allocate later</option>
-                <option v-for="b in availableBeds" :key="b.id" :value="b.id">Bed {{ b.bed_number }}</option>
+                <option v-for="b in availableBeds" :key="b.id" :value="b.id">Bed {{ b.bed_number }}{{ b.ward ? ' — ' + b.ward + ', Room ' + b.room_number : '' }}</option>
             </select>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'admissions.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'admissions.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Admit Patient' }}
             </button>
         </div>

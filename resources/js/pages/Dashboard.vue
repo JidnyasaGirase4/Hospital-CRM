@@ -6,6 +6,7 @@ import StatCard from '../components/StatCard.vue';
 import PermissionGate from '../components/PermissionGate.vue';
 import Icon from '../components/Icon.vue';
 import RevenueByTypeChart from '../components/charts/RevenueByTypeChart.vue';
+import { formatMoney } from '../utils/format';
 
 const auth = useAuthStore();
 
@@ -103,8 +104,8 @@ onMounted(load);
                 label="Revenue Collected"
                 icon="banknote"
                 color="emerald"
-                :value="loading ? '…' : (stats.revenue ? stats.revenue.total_collected : 'No access')"
-                :hint="stats.revenue ? `Billed: ${stats.revenue.total_billed}` : 'This month'"
+                :value="loading ? '…' : (stats.revenue ? formatMoney(stats.revenue.total_collected) : 'No access')"
+                :hint="stats.revenue ? `Billed: ${formatMoney(stats.revenue.total_billed)}` : 'This month'"
             />
             <StatCard
                 label="Bed Occupancy"
@@ -116,7 +117,7 @@ onMounted(load);
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+            <div class="card p-5">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
                         <Icon name="chart" :size="16" />
@@ -131,7 +132,7 @@ onMounted(load);
             </div>
 
             <div class="space-y-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="card p-5">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
                             <Icon name="alert" :size="16" />
@@ -142,9 +143,9 @@ onMounted(load);
                         {{ loading ? '…' : (stats.lowStock ?? 'No access') }}
                     </p>
                     <p class="text-xs text-slate-400 mt-1">Medicines + inventory items below reorder level</p>
-                    <RouterLink v-if="stats.lowStock" :to="{ name: 'reports.index' }" class="inline-block mt-3 text-xs text-brand-600 hover:underline">View details →</RouterLink>
+                    <RouterLink v-if="stats.lowStock" :to="{ name: 'reports.index' }" class="btn btn-sm btn-soft mt-3">View details →</RouterLink>
                 </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="card p-5">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
                             <Icon name="bed" :size="16" />

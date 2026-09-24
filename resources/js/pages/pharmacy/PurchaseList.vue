@@ -36,7 +36,7 @@ watch(page, load);
     <div class="space-y-4">
         <div class="flex items-center justify-end">
             <PermissionGate permission="pharmacy.purchase">
-                <RouterLink :to="{ name: 'pharmacy-purchases.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'pharmacy-purchases.create' }" class="btn btn-primary">
                     + New Purchase
                 </RouterLink>
             </PermissionGate>

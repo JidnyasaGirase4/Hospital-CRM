@@ -48,9 +48,22 @@ class EmergencyService
     public function admit(EmergencyVisit $visit, array $admissionData): EmergencyVisit
     {
         return DB::transaction(function () use ($visit, $admissionData) {
+            // Re-read under a lock so a double-click / concurrent request can't
+            // admit the same visit twice.
+            $visit = EmergencyVisit::query()->lockForUpdate()->findOrFail($visit->id);
+            $this->assertActionable($visit);
+
+            $doctorId = $admissionData['doctor_id'] ?? $visit->doctor_id;
+
+            if (! $doctorId) {
+                throw ValidationException::withMessages([
+                    'doctor_id' => ['A doctor is required to admit this patient.'],
+                ]);
+            }
+
             $admission = $this->admissionService->admit([
                 'patient_id' => $visit->patient_id,
-                'doctor_id' => $admissionData['doctor_id'] ?? $visit->doctor_id,
+                'doctor_id' => $doctorId,
                 'admission_type' => 'emergency',
                 'reason' => $admissionData['reason'] ?? $visit->chief_complaint,
                 'bed_id' => $admissionData['bed_id'] ?? null,

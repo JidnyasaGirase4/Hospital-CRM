@@ -53,29 +53,29 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <RouterLink :to="{ name: 'insurance-claims.index' }" class="text-sm text-brand-600 hover:underline">View Claims →</RouterLink>
-                <button type="button" class="text-sm text-slate-500 hover:text-slate-800" @click="showCompanyForm = !showCompanyForm">
+        <div class="toolbar">
+            <div class="toolbar-filters">
+                <RouterLink :to="{ name: 'insurance-claims.index' }" class="btn btn-sm btn-soft">View Claims →</RouterLink>
+                <button type="button" class="btn btn-sm btn-neutral-soft" @click="showCompanyForm = !showCompanyForm">
                     {{ showCompanyForm ? 'Cancel' : 'Manage Companies' }}
                 </button>
             </div>
             <PermissionGate permission="insurance.create">
-                <RouterLink :to="{ name: 'insurance-policies.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'insurance-policies.create' }" class="btn btn-primary">
                     + New Policy
                 </RouterLink>
             </PermissionGate>
         </div>
 
-        <div v-if="showCompanyForm" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+        <div v-if="showCompanyForm" class="card p-4 space-y-3">
             <form class="grid grid-cols-2 sm:grid-cols-4 gap-2" @submit.prevent="addCompany">
-                <input v-model="companyForm.name" placeholder="Company name" required class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <input v-model="companyForm.contact_person" placeholder="Contact person" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <input v-model="companyForm.phone" placeholder="Phone" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                <button type="submit" class="bg-brand-600 text-white rounded text-sm px-3">Add</button>
+                <input v-model="companyForm.name" placeholder="Company name" required class="input input-sm" />
+                <input v-model="companyForm.contact_person" placeholder="Contact person" class="input input-sm" />
+                <input v-model="companyForm.phone" placeholder="Phone" class="input input-sm" />
+                <button type="submit" class="btn btn-primary btn-sm">Add</button>
             </form>
             <ul class="text-sm text-slate-600 flex flex-wrap gap-3">
-                <li v-for="c in companies" :key="c.id" class="border border-slate-200 rounded px-2 py-1">{{ c.name }}</li>
+                <li v-for="c in companies" :key="c.id" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{ c.name }}</li>
             </ul>
         </div>
 

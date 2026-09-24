@@ -1,6 +1,7 @@
 <script setup>
 import Badge from './Badge.vue';
 import Icon from './Icon.vue';
+import { autoFormat, isMoneyKey } from '../utils/format';
 
 defineProps({
     columns: { type: Array, required: true },
@@ -10,16 +11,19 @@ defineProps({
 });
 
 defineEmits(['page-change']);
+
+const isRight = (col) => col.align === 'right' || (!col.align && !col.badge && isMoneyKey(col.key));
+const cellValue = (col, row) => (col.format ? col.format(row) : autoFormat(col.key, row[col.key]));
 </script>
 
 <template>
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="card overflow-hidden">
         <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-gradient-to-b from-slate-50 to-slate-50/60 text-slate-500 text-left border-b border-slate-200">
                 <tr>
-                    <th v-for="col in columns" :key="col.key" class="px-4 py-3.5 font-bold text-[11px] uppercase tracking-wider">{{ col.label }}</th>
-                    <th v-if="$slots.actions" class="px-4 py-3.5 font-bold text-[11px] uppercase tracking-wider text-right">Actions</th>
+                    <th v-for="col in columns" :key="col.key" class="whitespace-nowrap px-4 py-3.5 font-bold text-[11px] uppercase tracking-wider" :class="isRight(col) ? 'text-right' : ''">{{ col.label }}</th>
+                    <th v-if="$slots.actions" class="print:hidden px-4 py-3.5 font-bold text-[11px] uppercase tracking-wider text-right">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -46,13 +50,13 @@ defineEmits(['page-change']);
                 </tr>
                 <template v-else>
                     <tr v-for="(row, i) in rows" :key="row.id" class="transition-colors hover:bg-brand-50/50" :class="i % 2 === 1 ? 'bg-slate-50/40' : ''">
-                        <td v-for="col in columns" :key="col.key" class="px-4 py-3 text-slate-700">
+                        <td v-for="col in columns" :key="col.key" class="px-4 py-3 text-slate-700" :class="isRight(col) ? 'text-right tabular-nums' : ''">
                             <slot :name="`cell-${col.key}`" :row="row">
                                 <Badge v-if="col.badge" :value="col.format ? col.format(row) : row[col.key]" />
-                                <template v-else>{{ col.format ? col.format(row) : (row[col.key] ?? '—') }}</template>
+                                <template v-else>{{ cellValue(col, row) }}</template>
                             </slot>
                         </td>
-                        <td v-if="$slots.actions" class="px-4 py-3 text-right">
+                        <td v-if="$slots.actions" class="whitespace-nowrap px-4 py-3 text-right print:hidden">
                             <slot name="actions" :row="row" />
                         </td>
                     </tr>
@@ -60,18 +64,18 @@ defineEmits(['page-change']);
             </tbody>
         </table>
         </div>
-        <div v-if="pagination && pagination.last_page > 1" class="flex flex-col sm:flex-row items-center justify-between gap-2 px-4 py-3.5 border-t border-slate-100 text-sm text-slate-500 bg-slate-50/50">
+        <div v-if="pagination && pagination.last_page > 1" class="print:hidden flex flex-col sm:flex-row items-center justify-between gap-2 px-4 py-3.5 border-t border-slate-100 text-sm text-slate-500 bg-slate-50/50">
             <span>Page <span class="font-semibold text-slate-700">{{ pagination.current_page }}</span> of {{ pagination.last_page }} <span class="text-slate-400">({{ pagination.total }} total)</span></span>
             <div class="flex gap-2">
                 <button
                     type="button"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-200 bg-white rounded-lg font-medium hover:border-brand-300 hover:text-brand-600 hover:shadow-sm disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-500 disabled:hover:shadow-none transition-all"
+                    class="btn btn-secondary btn-sm"
                     :disabled="pagination.current_page <= 1"
                     @click="$emit('page-change', pagination.current_page - 1)"
                 ><Icon name="arrow-left" :size="14" /> Prev</button>
                 <button
                     type="button"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-200 bg-white rounded-lg font-medium hover:border-brand-300 hover:text-brand-600 hover:shadow-sm disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-500 disabled:hover:shadow-none transition-all"
+                    class="btn btn-secondary btn-sm"
                     :disabled="pagination.current_page >= pagination.last_page"
                     @click="$emit('page-change', pagination.current_page + 1)"
                 >Next <Icon name="arrow-left" :size="14" class="rotate-180" /></button>

@@ -45,55 +45,55 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">New Pharmacy Purchase</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">New Pharmacy Purchase</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Supplier</label>
-                <select v-model="form.supplier_id" class="w-full border border-slate-300 rounded px-3 py-2 text-sm">
+                <label class="label">Supplier</label>
+                <select v-model="form.supplier_id" class="input">
                     <option value="">Select…</option>
                     <option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option>
                 </select>
-                <p v-if="errors.supplier_id" class="text-xs text-red-600 mt-1">{{ errors.supplier_id[0] }}</p>
+                <p v-if="errors.supplier_id" class="field-error">{{ errors.supplier_id[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Invoice number</label>
-                <input v-model="form.invoice_number" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Invoice number</label>
+                <input v-model="form.invoice_number" class="input" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Purchase date</label>
-                <input v-model="form.purchase_date" type="date" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
+                <label class="label">Purchase date</label>
+                <input v-model="form.purchase_date" type="date" class="input" />
             </div>
         </div>
 
         <div>
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-semibold text-slate-600">Items</h3>
-                <button type="button" class="text-brand-600 text-xs hover:underline" @click="addItem">+ Add item</button>
+                <h3 class="card-title mb-3">Items</h3>
+                <button type="button" class="btn btn-sm btn-soft" @click="addItem">+ Add item</button>
             </div>
             <div v-for="(item, index) in items" :key="index" class="border border-slate-200 rounded p-3 mb-2 space-y-2">
                 <div class="flex items-center justify-between">
                     <div class="flex-1 mr-2">
                         <SearchSelect v-model="item.medicine_id" :fetcher="fetchMedicines" placeholder="Search medicine…" />
                     </div>
-                    <button v-if="items.length > 1" type="button" class="text-red-500 text-xs" @click="removeItem(index)">Remove</button>
+                    <button v-if="items.length > 1" type="button" class="btn btn-sm btn-danger-soft" @click="removeItem(index)">Remove</button>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
-                    <input v-model="item.batch_number" placeholder="Batch #" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                    <input v-model.number="item.quantity" type="number" min="1" placeholder="Qty" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                    <input v-model.number="item.unit_cost" type="number" step="0.01" placeholder="Unit cost" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                    <input v-model.number="item.selling_price" type="number" step="0.01" placeholder="Selling price" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                    <input v-model.number="item.mrp" type="number" step="0.01" placeholder="MRP" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
-                    <input v-model="item.expiry_date" type="date" class="border border-slate-300 rounded px-2 py-1.5 text-sm" />
+                    <input v-model="item.batch_number" placeholder="Batch #" class="input input-sm" />
+                    <input v-model.number="item.quantity" type="number" min="1" placeholder="Qty" class="input input-sm" />
+                    <input v-model.number="item.unit_cost" type="number" step="0.01" placeholder="Unit cost" class="input input-sm" />
+                    <input v-model.number="item.selling_price" type="number" step="0.01" placeholder="Selling price" class="input input-sm" />
+                    <input v-model.number="item.mrp" type="number" step="0.01" placeholder="MRP" class="input input-sm" />
+                    <input v-model="item.expiry_date" type="date" class="input input-sm" />
                 </div>
             </div>
-            <p v-if="errors.items" class="text-xs text-red-600 mt-1">{{ errors.items[0] }}</p>
+            <p v-if="errors.items" class="field-error">{{ errors.items[0] }}</p>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'pharmacy-purchases.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'pharmacy-purchases.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

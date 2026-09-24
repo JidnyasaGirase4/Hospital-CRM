@@ -42,11 +42,11 @@ watch(page, load);
 <template>
     <div class="space-y-4">
         <div class="flex items-center justify-end">
-            <button type="button" class="text-sm text-brand-600 hover:underline" @click="markAllRead">Mark all as read</button>
+            <button type="button" class="btn btn-sm btn-soft" @click="markAllRead">Mark all as read</button>
         </div>
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }">
             <template #actions="{ row }">
-                <button v-if="!row.read_at" type="button" class="inline-flex items-center bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-100 hover:ring-brand-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="markRead(row)">Mark Read</button>
+                <button v-if="!row.read_at" type="button" class="btn btn-sm btn-soft" @click="markRead(row)">Mark Read</button>
             </template>
         </DataTable>
     </div>

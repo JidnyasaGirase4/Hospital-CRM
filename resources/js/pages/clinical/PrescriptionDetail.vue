@@ -1,9 +1,13 @@
 <script setup>
+import PageLoader from '../../components/PageLoader.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import apiClient from '../../api/client';
 import PermissionGate from '../../components/PermissionGate.vue';
 import { useUiStore } from '../../stores/ui';
+import PageHero from '../../components/PageHero.vue';
+import SectionCard from '../../components/SectionCard.vue';
+import { doctorName } from '../../utils/format';
 
 const ui = useUiStore();
 const route = useRoute();
@@ -29,32 +33,41 @@ onMounted(load);
 </script>
 
 <template>
-    <div v-if="loading" class="text-slate-400">Loading…</div>
-    <div v-else-if="prescription" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-slate-900">{{ prescription.patient?.name }} ({{ prescription.patient?.mrn }})</h2>
-                <p class="text-sm text-slate-500">Dr. {{ prescription.doctor?.name }} · {{ prescription.status }}</p>
-            </div>
-            <PermissionGate permission="prescriptions.delete">
-                <button v-if="prescription.status !== 'cancelled'" type="button" class="text-sm text-red-600 hover:underline" @click="cancelPrescription">Cancel</button>
-            </PermissionGate>
-        </div>
+    <PageLoader v-if="loading" />
+    <div v-else-if="prescription" class="space-y-5">
+        <PageHero
+            :title="prescription.patient?.name ?? 'Prescription'"
+            :status="prescription.status"
+            :subtitle="`MRN ${prescription.patient?.mrn ?? '—'} · ${doctorName(prescription.doctor?.name)}`"
+            initials
+        >
+            <template #actions>
+                <PermissionGate permission="prescriptions.delete">
+                    <button v-if="prescription.status !== 'cancelled'" type="button" class="btn btn-danger-soft" @click="cancelPrescription">Cancel Prescription</button>
+                </PermissionGate>
+            </template>
+        </PageHero>
 
-        <table class="w-full text-sm">
-            <thead class="text-left text-slate-500">
-                <tr><th class="py-1">Medicine</th><th>Dosage</th><th>Frequency</th><th>Qty</th><th>Dispensed</th></tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                <tr v-for="item in prescription.items" :key="item.id">
-                    <td class="py-1.5">{{ item.medicine?.name }} {{ item.medicine?.strength }}</td>
-                    <td>{{ item.dosage || '—' }}</td>
-                    <td>{{ item.frequency || '—' }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.dispensed_quantity }} / {{ item.quantity }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <p v-if="prescription.notes" class="text-sm text-slate-600"><span class="text-slate-400">Notes:</span> {{ prescription.notes }}</p>
+        <SectionCard title="Medicines" :count="prescription.items?.length ?? 0" flush>
+            <div class="overflow-x-auto px-3 pb-3 pt-2">
+                <table class="table-simple">
+                    <thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th class="text-right">Qty</th><th class="text-right">Dispensed</th></tr></thead>
+                    <tbody>
+                        <tr v-for="item in prescription.items" :key="item.id">
+                            <td class="font-medium text-slate-800">{{ item.medicine?.name }} {{ item.medicine?.strength }}</td>
+                            <td>{{ item.dosage || '—' }}</td>
+                            <td>{{ item.frequency || '—' }}</td>
+                            <td class="text-right tabular-nums">{{ item.quantity }}</td>
+                            <td class="text-right tabular-nums">{{ item.dispensed_quantity }} / {{ item.quantity }}</td>
+                        </tr>
+                        <tr v-if="!prescription.items?.length"><td colspan="5" class="empty-note">No medicines on this prescription</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </SectionCard>
+        <div v-if="prescription.notes" class="card card-pad">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
+            <p class="mt-1 whitespace-pre-line text-sm text-slate-700">{{ prescription.notes }}</p>
+        </div>
     </div>
 </template>

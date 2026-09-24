@@ -44,7 +44,7 @@ watch(page, load);
     <div class="space-y-4">
         <div class="flex items-center justify-end">
             <PermissionGate permission="diagnoses.create">
-                <RouterLink :to="{ name: 'diagnoses.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'diagnoses.create' }" class="btn btn-primary">
                     + New Diagnosis
                 </RouterLink>
             </PermissionGate>
@@ -52,7 +52,7 @@ watch(page, load);
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }">
             <template #actions="{ row }">
                 <PermissionGate permission="diagnoses.delete">
-                    <button type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="remove(row)">Delete</button>
+                    <button type="button" class="btn btn-sm btn-danger-soft" @click="remove(row)">Delete</button>
                 </PermissionGate>
             </template>
         </DataTable>

@@ -74,16 +74,16 @@ watch([page, status], load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <RouterLink :to="{ name: 'insurance-policies.index' }" class="text-sm text-brand-600 hover:underline">← Back to Policies</RouterLink>
-                <select v-model="status" class="border border-slate-300 rounded px-3 py-2 text-sm">
+        <div class="toolbar">
+            <div class="toolbar-filters">
+                <RouterLink :to="{ name: 'insurance-policies.index' }" class="btn btn-sm btn-soft">← Back to Policies</RouterLink>
+                <select v-model="status" class="input w-auto">
                     <option value="">All statuses</option>
                     <option v-for="s in ['submitted', 'approved', 'rejected', 'settled']" :key="s" :value="s">{{ s }}</option>
                 </select>
             </div>
             <PermissionGate permission="insurance.create">
-                <RouterLink :to="{ name: 'insurance-claims.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'insurance-claims.create' }" class="btn btn-primary">
                     + Submit Claim
                 </RouterLink>
             </PermissionGate>
@@ -92,9 +92,9 @@ watch([page, status], load);
             <template #actions="{ row }">
                 <PermissionGate permission="insurance.approve-claim">
                     <div class="flex gap-2 justify-end">
-                        <button v-if="row.status === 'submitted'" type="button" class="inline-flex items-center bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-100 hover:ring-emerald-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="approve(row)">Approve</button>
-                        <button v-if="row.status === 'submitted'" type="button" class="inline-flex items-center bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:ring-red-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="reject(row)">Reject</button>
-                        <button v-if="row.status === 'approved'" type="button" class="inline-flex items-center bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-100 hover:ring-brand-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors" @click="settle(row)">Settle</button>
+                        <button v-if="row.status === 'submitted'" type="button" class="btn btn-sm btn-success-soft" @click="approve(row)">Approve</button>
+                        <button v-if="row.status === 'submitted'" type="button" class="btn btn-sm btn-danger-soft" @click="reject(row)">Reject</button>
+                        <button v-if="row.status === 'approved'" type="button" class="btn btn-sm btn-soft" @click="settle(row)">Settle</button>
                     </div>
                 </PermissionGate>
             </template>

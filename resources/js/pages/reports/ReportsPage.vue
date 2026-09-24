@@ -4,6 +4,7 @@ import apiClient from '../../api/client';
 import StatCard from '../../components/StatCard.vue';
 import DataTable from '../../components/DataTable.vue';
 import Icon from '../../components/Icon.vue';
+import { formatMoney } from '../../utils/format';
 
 const TYPE_LABELS = {
     opd: 'OPD',
@@ -67,16 +68,16 @@ onMounted(loadAll);
 
 <template>
     <div class="space-y-8">
-        <div class="flex flex-wrap items-end gap-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <div class="flex flex-wrap items-end gap-3 card p-4">
             <div>
                 <label class="block text-xs font-medium text-slate-500 mb-1">From</label>
-                <input v-model="from" type="date" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent" />
+                <input v-model="from" type="date" class="input input-sm w-44" />
             </div>
             <div>
                 <label class="block text-xs font-medium text-slate-500 mb-1">To</label>
-                <input v-model="to" type="date" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent" />
+                <input v-model="to" type="date" class="input input-sm w-44" />
             </div>
-            <button type="button" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md transition-all" @click="applyFilter">
+            <button type="button" class="btn btn-primary" @click="applyFilter">
                 <Icon name="chart" :size="15" /> Apply
             </button>
         </div>
@@ -87,8 +88,8 @@ onMounted(loadAll);
                 Revenue <span class="font-normal text-slate-400">({{ revenue.period.from }} to {{ revenue.period.to }})</span>
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <StatCard label="Total Billed" icon="banknote" color="sky" :value="revenue.total_billed" />
-                <StatCard label="Total Collected" icon="banknote" color="emerald" :value="revenue.total_collected" />
+                <StatCard label="Total Billed" icon="banknote" color="sky" :value="formatMoney(revenue.total_billed)" />
+                <StatCard label="Total Collected" icon="banknote" color="emerald" :value="formatMoney(revenue.total_collected)" />
             </div>
             <DataTable v-if="revenue.by_type?.length" :columns="revenueColumns" :rows="revenue.by_type" :loading="false" :pagination="null" />
         </div>
@@ -112,7 +113,7 @@ onMounted(loadAll);
                 Pharmacy Low Stock
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                <div class="card p-4">
                     <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Medicines ({{ pharmacyStock.low_stock_medicines.length }})</h3>
                     <ul class="text-sm divide-y divide-slate-100">
                         <li v-for="m in pharmacyStock.low_stock_medicines" :key="m.id" class="py-2 flex items-center justify-between">
@@ -122,7 +123,7 @@ onMounted(loadAll);
                         <li v-if="pharmacyStock.low_stock_medicines.length === 0" class="text-slate-400 py-2 text-center">None</li>
                     </ul>
                 </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                <div class="card p-4">
                     <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Inventory Items ({{ pharmacyStock.low_stock_inventory_items.length }})</h3>
                     <ul class="text-sm divide-y divide-slate-100">
                         <li v-for="i in pharmacyStock.low_stock_inventory_items" :key="i.id" class="py-2 flex items-center justify-between">

@@ -67,33 +67,33 @@ async function submit() {
 </script>
 
 <template>
-    <form class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold text-slate-800">{{ isEdit ? 'Edit Role' : 'New Role' }}</h2>
+    <form class="card mx-auto max-w-5xl space-y-5 p-6 sm:p-8" @submit.prevent="submit">
+        <h2 class="border-b border-slate-100 pb-4 text-xl font-extrabold tracking-tight text-slate-900">{{ isEdit ? 'Edit Role' : 'New Role' }}</h2>
         <p v-if="loadError" class="text-sm text-red-600">{{ loadError }}</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                <input v-model="form.name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm" />
-                <p v-if="errors.name" class="text-xs text-red-600 mt-1">{{ errors.name[0] }}</p>
+                <label class="label">Name</label>
+                <input v-model="form.name" class="input" />
+                <p v-if="errors.name" class="field-error">{{ errors.name[0] }}</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Slug</label>
-                <input v-model="form.slug" :disabled="isEdit" class="w-full border border-slate-300 rounded px-3 py-2 text-sm disabled:bg-slate-100" />
-                <p v-if="errors.slug" class="text-xs text-red-600 mt-1">{{ errors.slug[0] }}</p>
+                <label class="label">Slug</label>
+                <input v-model="form.slug" :disabled="isEdit" class="input" />
+                <p v-if="errors.slug" class="field-error">{{ errors.slug[0] }}</p>
             </div>
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
-            <textarea v-model="form.description" rows="2" class="w-full border border-slate-300 rounded px-3 py-2 text-sm"></textarea>
+            <label class="label">Description</label>
+            <textarea v-model="form.description" rows="2" class="input"></textarea>
         </div>
 
         <div>
-            <h3 class="text-sm font-semibold text-slate-600 mb-2">Permissions</h3>
+            <h3 class="card-title mb-3">Permissions</h3>
             <div v-for="(perms, module) in permissionsByModule" :key="module" class="mb-3">
                 <p class="text-xs font-medium uppercase text-slate-400 mb-1">{{ module }}</p>
                 <div class="flex flex-wrap gap-3">
-                    <label v-for="perm in perms" :key="perm.id" class="flex items-center gap-2 text-sm border border-slate-200 rounded px-3 py-1.5">
+                    <label v-for="perm in perms" :key="perm.id" class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-brand-300 hover:bg-brand-50/50">
                         <input type="checkbox" :value="perm.id" v-model="form.permission_ids" />
                         {{ perm.name }}
                     </label>
@@ -101,9 +101,9 @@ async function submit() {
             </div>
         </div>
 
-        <div class="flex justify-end gap-3">
-            <RouterLink :to="{ name: 'roles.index' }" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900">Cancel</RouterLink>
-            <button type="submit" :disabled="saving" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50">
+        <div class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <RouterLink :to="{ name: 'roles.index' }" class="btn btn-secondary">Cancel</RouterLink>
+            <button type="submit" :disabled="saving" class="btn btn-primary">
                 {{ saving ? 'Saving…' : 'Save' }}
             </button>
         </div>

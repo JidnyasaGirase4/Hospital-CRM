@@ -6,7 +6,7 @@ This README documents the full project vision and phased plan. Actual progress a
 
 - **Backend (Laravel API):** Phases 0–11 of the backend are complete — auth, RBAC, patients & Patient 360°, appointments/OPD/consultations, pharmacy, laboratory, radiology, IPD/beds/nursing/emergency/OT, billing/payments/insurance, inventory/suppliers, documents/notifications/reports/audit logs, full test suite (121 tests), and a security hardening pass. See `routes/v1/*.php` and `app/Http/Controllers/Api/V1/` for what's live.
 - **Frontend:** the plan below specifies a separate Vanilla JS/HTML/CSS frontend project. What actually exists today is an **interim Vue 3 SPA embedded in this Laravel app** (`resources/js/`), served at `/` via `php artisan serve` — no separate frontend project or CORS setup needed yet. It currently has working screens for **Dashboard, Patients (incl. Patient 360°), Appointments, and Users & Roles**; the remaining modules listed below show as "Soon" placeholders in the sidebar pending their own screens. Whether to continue in Vue or rebuild per the Vanilla JS plan below is an open decision.
-- **Local login:** seeded Super Admin — `admin@hospital-crm.test` / `password` (see `database/seeders/DatabaseSeeder.php`).
+- **Local login:** seeded Super Admin — `admin@gmail.com` / `password` (see `database/seeders/DatabaseSeeder.php`).
 
 Everything from here down is the original project specification/roadmap.
 

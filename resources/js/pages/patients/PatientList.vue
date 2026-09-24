@@ -51,16 +51,16 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="toolbar">
             <input
                 v-model="search"
                 type="text"
                 placeholder="Search by MRN, name or mobile…"
-                class="w-72 border border-slate-300 rounded px-3 py-2 text-sm"
+                class="input w-72"
                 @keyup.enter="onSearch"
             />
             <PermissionGate permission="patients.create">
-                <RouterLink :to="{ name: 'patients.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'patients.create' }" class="btn btn-primary">
                     + New Patient
                 </RouterLink>
             </PermissionGate>
@@ -73,19 +73,19 @@ watch(page, load);
             @page-change="(p) => { page = p; }"
         >
             <template #cell-mrn="{ row }">
-                <RouterLink :to="{ name: 'patients.show', params: { id: row.id } }" class="text-brand-600 hover:underline">
+                <RouterLink :to="{ name: 'patients.show', params: { id: row.id } }" class="link">
                     {{ row.mrn }}
                 </RouterLink>
             </template>
             <template #actions="{ row }">
                 <div class="flex gap-2 justify-end text-xs">
                     <PermissionGate permission="patients.update">
-                        <RouterLink :to="{ name: 'patients.edit', params: { id: row.id } }" class="inline-flex items-center bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-200 hover:ring-slate-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors">
+                        <RouterLink :to="{ name: 'patients.edit', params: { id: row.id } }" class="btn btn-sm btn-neutral-soft">
                             Edit
                         </RouterLink>
                     </PermissionGate>
                     <PermissionGate permission="patients.delete">
-                        <button type="button" class="text-red-600 hover:underline" @click="remove(row)">Delete</button>
+                        <button type="button" class="btn btn-sm btn-danger-soft" @click="remove(row)">Delete</button>
                     </PermissionGate>
                 </div>
             </template>

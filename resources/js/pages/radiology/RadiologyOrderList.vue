@@ -34,17 +34,17 @@ watch(page, load);
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <RouterLink :to="{ name: 'radiology.hub' }" class="text-sm text-brand-600 hover:underline">← Test Catalog</RouterLink>
+        <div class="toolbar">
+            <RouterLink :to="{ name: 'radiology.hub' }" class="btn btn-sm btn-soft">← Test Catalog</RouterLink>
             <PermissionGate permission="radiology.create">
-                <RouterLink :to="{ name: 'radiology-orders.create' }" class="inline-flex items-center gap-1.5 bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all">
+                <RouterLink :to="{ name: 'radiology-orders.create' }" class="btn btn-primary">
                     + New Radiology Order
                 </RouterLink>
             </PermissionGate>
         </div>
         <DataTable :columns="columns" :rows="rows" :loading="loading" :pagination="pagination" @page-change="(p) => { page = p; }">
             <template #cell-patient="{ row }">
-                <RouterLink :to="{ name: 'radiology-orders.show', params: { id: row.id } }" class="text-brand-600 hover:underline">{{ row.patient?.name ?? '—' }}</RouterLink>
+                <RouterLink :to="{ name: 'radiology-orders.show', params: { id: row.id } }" class="link">{{ row.patient?.name ?? '—' }}</RouterLink>
             </template>
         </DataTable>
     </div>

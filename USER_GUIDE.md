@@ -4,7 +4,7 @@
 
 Go to `/login` and sign in.
 
-- Default admin (from `DatabaseSeeder`): `admin@hospital-crm.test` / `password` (change this in production).
+- Default admin (from `DatabaseSeeder`): `admin@gmail.com` / `password` (change this in production).
 - If demo data has been seeded (`php artisan db:seed --class=DemoDataSeeder`), 7 additional sample staff accounts exist (doctor, nurse, receptionist, pharmacist, lab technician, accountant) — see `database/seeders/DemoDataSeeder.php` for their emails.
 
 ## 2. Navigation
