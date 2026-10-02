@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: hospital-crm
+    runtime: docker
+    plan: free
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: hospital-crm-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: SEED_DEMO
+        value: "true"
+databases:
+  - name: hospital-crm-db
+    plan: free

@@ -43,7 +43,7 @@ class ReportService
         $byWard = Bed::query()
             ->join('rooms', 'beds.room_id', '=', 'rooms.id')
             ->join('wards', 'rooms.ward_id', '=', 'wards.id')
-            ->selectRaw('wards.name as ward_name, COUNT(*) as total_beds, SUM(CASE WHEN beds.status = "occupied" THEN 1 ELSE 0 END) as occupied_beds')
+            ->selectRaw('wards.name as ward_name, COUNT(*) as total_beds, SUM(CASE WHEN beds.status = 'occupied' THEN 1 ELSE 0 END) as occupied_beds')
             ->groupBy('wards.id', 'wards.name')
             ->get();
 
